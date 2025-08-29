@@ -1,3 +1,5 @@
+import numpy as np
+
 def calculate_area_and_volume(img, voxel, cbd_surface_porosity):
     # calculates surface area and active material volume
 

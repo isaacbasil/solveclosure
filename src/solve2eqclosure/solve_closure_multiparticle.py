@@ -8,11 +8,11 @@ import re
 import tifffile as tif
 import pickle
 
-from utility import add_slash, check_for_existing_solutions
-from image_analysis import calculate_area_and_volume, calculate_source_terms, check_and_write_area_and_volume_total, return_x_positions, subdivide_image_using_label_map
-from openfoam_case_setup.make_blockMeshDict import make_blockMeshDict 
-from openfoam_case_setup.make_topoSetDict import make_topoSetDict
-from openfoam_case_setup.multiparticle import write_bc_file_multiparticle, write_fvOptions_file_multiparticle, write_myFunctionsDict_multiparticle, write_p_file, write_regionProperties_file, write_surface_integral_func, write_volume_integral_func, write_thermophysicalProperties_file
+from solve2eqclosure.utility import add_slash, check_for_existing_solutions
+from solve2eqclosure.image_analysis import calculate_area_and_volume, calculate_source_terms, check_and_write_area_and_volume_total, return_x_positions, subdivide_image_using_label_map
+from solve2eqclosure.openfoam_case_setup.make_blockMeshDict import make_blockMeshDict 
+from solve2eqclosure.openfoam_case_setup.make_topoSetDict import make_topoSetDict
+from solve2eqclosure.openfoam_case_setup.multiparticle import write_bc_file_multiparticle, write_fvOptions_file_multiparticle, write_myFunctionsDict_multiparticle, write_p_file, write_regionProperties_file, write_surface_integral_func, write_volume_integral_func, write_thermophysicalProperties_file
 
 
 # ============ Inputs ==============
@@ -29,7 +29,7 @@ def solve_closure_multiparticle(case_dir, img_path, label_map_path, load_of_cmd,
         load_of_cmd (str): The command which must be executed in your terminal to load OpenFOAM. 
         voxel (float): The voxel side length of the image in meters. 
         cbd_surface_porosity (float): The surface porosity of the CBD phase. 
-        D_s (float): The diffusivity of the AM. 
+        D_s (float): The diffusivity of the AM in m2.s-1 
         allow_flux (bool): Set to False for closure Option 1 (see article). 
         parallelise (bool): Set to True to solve in parallel.   
         n_procs (int): The number of processors to use if parallelisation chosen. 
@@ -44,7 +44,7 @@ def solve_closure_multiparticle(case_dir, img_path, label_map_path, load_of_cmd,
     case_dir = add_slash(case_dir)
 
     # copy necessary template files 
-    cmd = f"cp -r ./template_dirs/multiparticle/* {case_dir}"
+    cmd = f"cp -r ./src/solve2eqclosure/template_dirs/multiparticle/* {case_dir}"
     subprocess.run(["bash", "-c", cmd], check=True)
 
     check_for_existing_solutions(case_dir)

@@ -1,3 +1,5 @@
+from solve2eqclosure.image_analysis.calculate_area_and_volume import calculate_area_and_volume
+
 def check_and_write_area_and_volume_total(closure_data, entire_img, voxel, cbd_surface_porosity):
     # checks that the sum of area and volume from the particles matches the total image
 

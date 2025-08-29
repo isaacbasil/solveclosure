@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "solve-2eq-closure"
+name = "solve2eqclosure"
 version = "0.1.0"
 description = "A package that solves the closure problem for the 2-equation model published by Paten et al."
 authors = [
@@ -12,6 +12,14 @@ authors = [
 license = {text = "MIT"}
 readme = "README.md"
 requires-python = ">=3.8"
+
+dependencies = [
+    "tifffile",
+    "numpy>=1.23",
+    "matplotlib",
+    "scikit-image",
+    "scipy",
+]
 
 [project.urls]
 Homepage = "https://github.com/isaacbasil/solve-2eq-closure.git"
