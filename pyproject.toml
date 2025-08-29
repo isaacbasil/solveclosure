@@ -14,5 +14,5 @@ readme = "README.md"
 requires-python = ">=3.8"
 
 [project.urls]
-Homepage = "https://github.com/yourname/hellopkg"
+Homepage = "https://github.com/isaacbasil/solve-2eq-closure.git"
 

@@ -1,3 +1,1 @@
-from .core import say_hello
-
-__all__ = ["say_hello"]
+from .solve_closure_multiparticle import solve_closure_multiparticle
