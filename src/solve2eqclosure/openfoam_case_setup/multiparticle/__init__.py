@@ -6,3 +6,4 @@ from .write_p_file import write_p_file
 from .write_surface_integral_func import write_surface_integral_func
 from .write_volume_integral_func import write_volume_integral_func
 from .write_myFunctionsDict_multiparticle import write_myFunctionsDict_multiparticle
+from .write_decomposeParDict_file import write_decomposeParDict_file

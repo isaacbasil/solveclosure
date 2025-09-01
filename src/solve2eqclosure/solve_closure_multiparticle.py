@@ -12,7 +12,7 @@ from solve2eqclosure.utility import add_slash, check_for_existing_solutions
 from solve2eqclosure.image_analysis import calculate_area_and_volume, calculate_source_terms, check_and_write_area_and_volume_total, return_x_positions, subdivide_image_using_label_map
 from solve2eqclosure.openfoam_case_setup.make_blockMeshDict import make_blockMeshDict 
 from solve2eqclosure.openfoam_case_setup.make_topoSetDict import make_topoSetDict
-from solve2eqclosure.openfoam_case_setup.multiparticle import write_bc_file_multiparticle, write_fvOptions_file_multiparticle, write_myFunctionsDict_multiparticle, write_p_file, write_regionProperties_file, write_surface_integral_func, write_volume_integral_func, write_thermophysicalProperties_file
+from solve2eqclosure.openfoam_case_setup.multiparticle import write_bc_file_multiparticle, write_fvOptions_file_multiparticle, write_myFunctionsDict_multiparticle, write_p_file, write_regionProperties_file, write_surface_integral_func, write_volume_integral_func, write_thermophysicalProperties_file, write_decomposeParDict_file
 
 
 # ============ Inputs ==============
@@ -167,7 +167,7 @@ def solve_closure_multiparticle(case_dir, img_path, label_map_path, load_of_cmd,
     if parallelise:
         # make the decomposeParDict file
         decomposeParDict_path = of_case_dir + "/system/decomposeParDict"
-        update_decomposeParDict_file(decomposeParDict_path, n_procs)
+        write_decomposeParDict_file(decomposeParDict_path, n_procs)
 
         for particle_name in particle_names:
             # copy the decomposeParDict file to each particle dir
