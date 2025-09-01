@@ -1,0 +1,7 @@
+sphinx
+sphinx-rtd-theme
+tifffile
+numpy
+matplotlib
+scikit-image
+scipy
