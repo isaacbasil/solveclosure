@@ -1,6 +1,5 @@
 import os 
 def check_for_existing_solutions(case_dir):
-    # 
     """
     Checks if a closure solution already exists in the case directory provided and prompts user. 
     

@@ -17,7 +17,7 @@ from solve2eqclosure.openfoam_case_setup.multiparticle import write_bc_file_mult
 
 # ============ Inputs ==============
 
-def solve_closure_multiparticle(case_dir, img_path, label_map_path, load_of_cmd, voxel, cbd_surface_porosity, D_s, allow_flux=True, parallelise=False, n_procs=8, run_solver=True, T_offset=1e5):
+def solve_closure_multiparticle(case_dir, img_path, label_map_path, load_of_cmd, voxel, cbd_surf_por, D_s, allow_flux=True, parallelise=False, n_procs=8, run_solver=True, T_offset=1e5):
 
     """
     Solves the closure problem as described in [1] using OpenFOAM. 
@@ -28,7 +28,7 @@ def solve_closure_multiparticle(case_dir, img_path, label_map_path, load_of_cmd,
         label_map_path (str): The path to the label map which identifies particle IDs. Same dimensions as the image. 
         load_of_cmd (str): The command which must be executed in your terminal to load OpenFOAM. 
         voxel (float): The voxel side length of the image in meters. 
-        cbd_surface_porosity (float): The surface porosity of the CBD phase. 
+        cbd_surf_por (float): The surface porosity of the CBD phase. 
         D_s (float): The diffusivity of the AM in m2.s-1 
         allow_flux (bool): Set to False for closure Option 1 (see article). 
         parallelise (bool): Set to True to solve in parallel.   
@@ -124,7 +124,7 @@ def solve_closure_multiparticle(case_dir, img_path, label_map_path, load_of_cmd,
         particle_name = "particle_" + str(key)
 
         # write correct source terms to OF files 
-        dimensional_S_vol, dimensional_bc_elec, dimensional_bc_cbd, total_particle_area, V_am = calculate_source_terms(subsection, voxel, cbd_surface_porosity, D_s)
+        dimensional_S_vol, dimensional_bc_elec, dimensional_bc_cbd, total_particle_area, V_am = calculate_source_terms(subsection, voxel, cbd_surf_por, D_s)
 
         closure_data["particle data"][key] = {"particle surface area": total_particle_area, "particle volume": V_am, "centre x position": x_positions_m[key - 1]}
 
@@ -183,7 +183,7 @@ def solve_closure_multiparticle(case_dir, img_path, label_map_path, load_of_cmd,
 
 
     # check area and volume, and add it to the closure data dictionary
-    closure_data = check_and_write_area_and_volume_total(closure_data, img, voxel, cbd_surface_porosity)
+    closure_data = check_and_write_area_and_volume_total(closure_data, img, voxel, cbd_surf_por)
 
 
     # ======= write particle_data file =========
@@ -203,5 +203,8 @@ def solve_closure_multiparticle(case_dir, img_path, label_map_path, load_of_cmd,
         if parallelise:
             cmd = f"{load_of_cmd} && reconstructPar -case {of_case_dir} -allRegions"
             subprocess.run(["bash", "-c", cmd], check=False)
+
+        from solve2eqclosure.process_closure_results import process_closure_results
+        process_closure_results(case_dir, cbd_surf_por, sep_surf_por=1.0, write=True, multiparticle=True)        
 
 
