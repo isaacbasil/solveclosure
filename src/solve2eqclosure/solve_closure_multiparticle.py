@@ -8,7 +8,7 @@ import re
 import tifffile as tif
 import pickle
 
-from solve2eqclosure.utility import add_slash, check_for_existing_solutions
+from solve2eqclosure.utility import add_slash, check_for_existing_solutions, find_latest_openfoam_installation
 from solve2eqclosure.image_analysis import calculate_area_and_volume, calculate_source_terms, check_and_write_area_and_volume_total, return_x_positions, subdivide_image_using_label_map
 from solve2eqclosure.openfoam_case_setup.make_blockMeshDict import make_blockMeshDict 
 from solve2eqclosure.openfoam_case_setup.make_topoSetDict import make_topoSetDict
@@ -17,7 +17,7 @@ from solve2eqclosure.openfoam_case_setup.multiparticle import write_bc_file_mult
 
 # ============ Inputs ==============
 
-def solve_closure_multiparticle(case_dir, img_path, label_map_path, load_of_cmd, voxel, cbd_surf_por, D_s, allow_flux=True, parallelise=False, n_procs=8, run_solver=True, T_offset=1e5):
+def solve_closure_multiparticle(case_dir, img_path, label_map_path, voxel, cbd_surf_por, D_s, load_of_cmd=None, allow_flux=True, parallelise=False, n_procs=8, run_solver=True, T_offset=1e5):
 
     """
     Solves the closure problem as described in [1] using OpenFOAM. 
@@ -26,10 +26,10 @@ def solve_closure_multiparticle(case_dir, img_path, label_map_path, load_of_cmd,
         case_dir (str): The path to an empty directory where the OpenFOAM case will be built.
         img_path (str): The path to the image of the electrode micrstructure in tif format. Electrolyte labelled 0, AM as 1, and CBD as 2.
         label_map_path (str): The path to the label map which identifies particle IDs. Same dimensions as the image. 
-        load_of_cmd (str): The command which must be executed in your terminal to load OpenFOAM. 
         voxel (float): The voxel side length of the image in meters. 
         cbd_surf_por (float): The surface porosity of the CBD phase. 
         D_s (float): The diffusivity of the AM in m2.s-1 
+        load_of_cmd (str): The command which must be executed in your terminal to load OpenFOAM. If not provided OpenFOAM installations will be searched for. 
         allow_flux (bool): Set to False for closure Option 1 (see article). 
         parallelise (bool): Set to True to solve in parallel.   
         n_procs (int): The number of processors to use if parallelisation chosen. 
@@ -40,14 +40,17 @@ def solve_closure_multiparticle(case_dir, img_path, label_map_path, load_of_cmd,
         No returns. Operates on a filesystem directory. 
     """
 
+    if load_of_cmd is None:
+        load_of_cmd = find_latest_openfoam_installation()
+        
     # correct path if slash not added at end
     case_dir = add_slash(case_dir)
+
+    check_for_existing_solutions(case_dir)
 
     # copy necessary template files 
     cmd = f"cp -r ./src/solve2eqclosure/template_dirs/multiparticle/* {case_dir}"
     subprocess.run(["bash", "-c", cmd], check=True)
-
-    check_for_existing_solutions(case_dir)
 
     # clean directory
     of_case_dir = case_dir + "openfoam_case/"

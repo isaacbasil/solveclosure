@@ -1,23 +1,41 @@
 
-import sys
 import os
 import solve2eqclosure
+import subprocess
+import pickle
+import numpy as np
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-img_path = "/home/isaac_paten/Documents/openFOAM_projects/testing_solve2eqclosure_package/two_squares/geom_files/two_squares.tif"
-label_map_path = "/home/isaac_paten/Documents/openFOAM_projects/testing_solve2eqclosure_package/two_squares/geom_files/two_squares_label_map.tif"
+# preparing paths 
+demo_path = os.path.join(os.getcwd(), "demos/two_squares/")
+case_dir = os.path.join(demo_path, "results/")
+img_path = os.path.join(demo_path, "two_squares.tif")
+label_map_path = os.path.join(demo_path, "two_squares_label_map.tif")
 
-case_dir = "/home/isaac_paten/Documents/openFOAM_projects/testing_solve2eqclosure_package/two_squares/"
 
-load_of_cmd = "source /usr/lib/openfoam/openfoam2412/etc/bashrc"
-
+# parameters 
 voxel = 1e-7
-
 cbd_surface_porosity = 0.5
-
 D_s = 4e-14
 
+# create a temporary directory to test
+cmd = f"mkdir {case_dir}"
+subprocess.run(["bash", "-c", cmd], check=False)
 
-solve2eqclosure.solve_closure_multiparticle(case_dir, img_path, label_map_path, load_of_cmd, voxel, cbd_surface_porosity, D_s, allow_flux=True, parallelise=False, n_procs=2, run_solver=True, T_offset=1e5)
+# solve 
+solve2eqclosure.solve_closure_multiparticle(case_dir, img_path, label_map_path, voxel, cbd_surface_porosity, D_s)
 
+# read steady state closure value
+closure_data_path = os.path.join(case_dir, "closure_data.pickle")
+
+with open(closure_data_path, 'rb') as f:
+    closure_data = pickle.load(f)
+
+s_surf_ave_steady_state = closure_data["global s surface average steady"]
+
+# delete the directory afterwards
+cmd = f"rm -r {case_dir}"
+subprocess.run(["bash", "-c", cmd], check=True)
+
+# check that value calcuulated agrees with validated results
+assert np.round(s_surf_ave_steady_state, 1) == -170.9

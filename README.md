@@ -10,7 +10,7 @@ It is recommended to install solve2eqclosure into a virtual environement.
 ### Using pip
 
 ```bash
-pip install pybamm
+pip install solve2eqclosure
 ```
 
 
