@@ -2,7 +2,14 @@
 
 def make_blockMeshDict(file_path, img, voxel):
     """
-    Makes the blockMeshDict file with the correct dimensions
+    Writes the blockMeshDict file with the correct dimensions
+    
+    Args:
+        file_path (str): The absolute path to the blockMeshDict file for the OpenFOAM case. 
+        img (nd array): The electrode image.
+        voxel (float): The voxel size in meters.
+
+    Returns:
     """
 
     nx, ny, nz = img.shape

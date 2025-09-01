@@ -1,7 +1,19 @@
 from solve2eqclosure.image_analysis.calculate_area_and_volume import calculate_area_and_volume
 
 def check_and_write_area_and_volume_total(closure_data, entire_img, voxel, cbd_surface_porosity):
-    # checks that the sum of area and volume from the particles matches the total image
+
+    """
+    Checks that the sum of area and volume from the particles matches the total image.
+    Writes the area and volume to the closure data dictionary
+    
+    Args:
+        closure_data (dict): The closure data dictionary.
+        entire_img (nd array): The electrode image.
+        voxel (float): The voxel size in meters.
+
+    Returns: 
+        closure_data (dict): The updated closure data dictionary
+    """
 
     if entire_img.dtype == bool:
         entire_img = entire_img.astype(int)
@@ -9,7 +21,7 @@ def check_and_write_area_and_volume_total(closure_data, entire_img, voxel, cbd_s
     area_am_elec, area_am_cbd, total_area, V_am = calculate_area_and_volume(entire_img, voxel, cbd_surface_porosity)
 
     pp_total_area = 0 # per particle area sum 
-    pp_V_am = 0 
+    pp_V_am = 0 # per particle volume sum 
 
     for key, value in closure_data["particle data"].items():
         pp_total_area += value["particle surface area"]

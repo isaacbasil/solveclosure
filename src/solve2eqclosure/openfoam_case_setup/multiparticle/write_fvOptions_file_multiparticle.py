@@ -1,5 +1,14 @@
 def write_fvOptions_file_multiparticle(file_path, particle_name, vol_source):
-    # writes the fvOptions file for each region, which contains the source term
+    """
+    Writes the OpenFOAM BC file for a multiparticle case  
+    
+    Args:
+        file_path (str): The absolute path to the fvOptions file for the OpenFOAM case. 
+        particle_name (str): The name of the particle in format particle_i.
+        vol_source (float): The source term within the AM volume.  
+
+    Returns:
+    """
 
     content = f"""
 FoamFile

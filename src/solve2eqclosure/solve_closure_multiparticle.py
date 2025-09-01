@@ -60,7 +60,7 @@ def solve_closure_multiparticle(case_dir, img_path, label_map_path, load_of_cmd,
     img = tif.imread(img_path)
     label_map = tif.imread(label_map_path)
 
-    # TODO: revisit this. For now inactive material is ignored and treated as elec
+    # Inactive material is ignored and treated as elec
     img[img == 51] = 0
 
     # subdivide tifs to find source terms

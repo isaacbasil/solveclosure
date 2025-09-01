@@ -1,5 +1,18 @@
 def write_bc_file_multiparticle(file_path, particle_name, elec_source, cbd_source, neighbour_ids, T_offset, allow_flux=True):
-    # write the file for T for each region
+    """
+    Writes the OpenFOAM BC file for a multiparticle case  
+    
+    Args:
+        file_path (str): The absolute path to the BC file (named T) for the OpenFOAM case. 
+        particle_name (str): The name of the particle in format particle_i.
+        elec_source (float): The source term at the AM-elec boundary.  
+        cbd_source (float): The source term at the AM-CBD boundary.   
+        neighbour_ids (list): The IDs of particles which share a boundary with particle i.
+        T_offset (float): A large number to prevent the OpenFOAM solver from encountering negative 'temperatures'.  
+        allow_flux(bool): False for Option 1, True for Option 2 (see documentation).
+
+    Returns:
+    """
 
     content = f"""
 FoamFile

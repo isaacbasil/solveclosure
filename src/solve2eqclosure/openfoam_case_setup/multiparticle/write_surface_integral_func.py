@@ -1,6 +1,13 @@
 def write_surface_integral_func(file_path, particle_name, type):
     """
-    type = "elec", "cbd", "sep"
+    Writes the surface integral function for a multiparticle case.  
+    
+    Args:
+        file_path (str): The absolute path to the surface integral function file. 
+        particle_name (str): The name of the particle in format particle_i.
+        type (str): The type of boundary. Can be "elec", "cbd", "sep". 
+
+    Returns:
     """
 
     if type == "elec":

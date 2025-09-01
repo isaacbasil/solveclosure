@@ -5,13 +5,19 @@ from skimage import measure
 from scipy import ndimage
 from scipy.ndimage import binary_dilation
 
-def subdivide_image_using_label_map(particle_id_path, original_tif, show_subsections=False):
+def subdivide_image_using_label_map(label_map_path, entire_img, show_subsections=False):
     """
-    Subdivides a tif file using particle IDs and displays the subsections.
+    Subdivides the electrode into subsections surrounding each particle. 
     
     Args:
-        particle_id_path (str): Path to the tif file containing particle IDs.
-        original_tif (nd array): The original tif file to be subdivided.
+        label_map_path (str): Path to the tif file containing particle IDs.
+        entire_img (nd array): The electrode image to be subdivided.
+        show_subsections (bool): Plots slices of the particle subsections. Useful for debugging. 
+
+    Returns:
+        subsections (dict): The arrays for each particle subsection.
+        centres (nd array): The centres of each particle
+        neighbour_ids (dict): The IDs of the components which particle i shares a boundary with. 
     """
 
     def remove_isolated_am_regions(img, particle_id, raise_error=True):
@@ -85,12 +91,12 @@ def subdivide_image_using_label_map(particle_id_path, original_tif, show_subsect
 
             
 
-    label_map = tif.imread(particle_id_path)
+    label_map = tif.imread(label_map_path)
 
     # convert from bool if needed
-    if original_tif.dtype == bool:
+    if entire_img.dtype == bool:
         print("\n Warning: the original tif is in boolean format. This may cause problems in certain scripts \n")
-        original_tif = original_tif.astype(int)
+        entire_img = entire_img.astype(int)
 
     n_particles = np.max(label_map)
 
@@ -110,10 +116,10 @@ def subdivide_image_using_label_map(particle_id_path, original_tif, show_subsect
             max_coord = np.max(particle_member_coords[idx])
             # pad the min and max coordinates by 1 to include the boundary
             min_coords[i].append(min_coord - 1 if min_coord > 0 else min_coord)
-            max_coords[i].append(max_coord + 1 if max_coord < original_tif.shape[idx] - 1 else max_coord)
+            max_coords[i].append(max_coord + 1 if max_coord < entire_img.shape[idx] - 1 else max_coord)
 
 
-        subsection = np.copy(original_tif[min_coords[i][0]:max_coords[i][0]+1,
+        subsection = np.copy(entire_img[min_coords[i][0]:max_coords[i][0]+1,
                                 min_coords[i][1]:max_coords[i][1]+1,
                                 min_coords[i][2]:max_coords[i][2]+1])
         

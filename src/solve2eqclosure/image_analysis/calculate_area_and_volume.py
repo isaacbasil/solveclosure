@@ -2,13 +2,26 @@ import numpy as np
 
 def calculate_area_and_volume(img, voxel, cbd_surface_porosity):
     # calculates surface area and active material volume
+    """
+    Calculates the source terms for the DIMENSIONAL closure problem PDE.
+    
+    Args:
+        img (nd array): The electrode image.
+        voxel (float): The voxel size in meters.
+        cbd_surface_porosity (float): The CBD surface porosity.
+
+    Returns: 
+        area_am_elec (float): The total area of the AM-elec boundary (m2).
+        area_am_cbd (float): The total area of the AM-CBD boundary (m2).
+        total_area (float): The total surface area (with surface porosity of CBD accounted for).
+        V_am (float): The total volume of the AM. 
+    """
 
     nx, ny, nz = img.shape
     count_am_cbd = 0
     count_am_elec = 0
-    #count_am_sep = 0 # TODO: add in accounting for sep! 
 
-    # calculate surface areas, this is copied from function in compare_dfn_dns_workflow 
+    # calculate surface areas 
     for i in range(nx):
         for j in range(ny):
             for k in range(nz):

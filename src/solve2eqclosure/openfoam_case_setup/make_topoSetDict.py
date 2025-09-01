@@ -9,12 +9,15 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 def make_topoSetDict(topoSetDict_path, img, multi_particle=False, label_map=None):
     """
-    Creates a topoSetDict file for use with the splitMeshRegions method in Openfoam. 
-    topoSetDict_path: the path at which the produced file will be saved 
-    img: an np.array of the image that is being treated
+    Writes the topoSetDict file for use with the splitMeshRegions method in Openfoam.
+    
+    Args:
+        file_path (str): The absolute path to the topoSetDict file for the OpenFOAM case. 
+        img (nd array): The electrode image.
+        multiparticle (bool): Set to True if a multiparticle case is being solved. 
+        label_map (nd array): A map identifying particle IDs (beginning at 1). Must be provided if multiparticle is True. 
 
-    multi_particle: set to true if solving the closure problem on the whole image rather than per particle
-    label_map: must be supplied if multi_particle is True. 
+    Returns:
     """
 
     def initialise_topo_file():

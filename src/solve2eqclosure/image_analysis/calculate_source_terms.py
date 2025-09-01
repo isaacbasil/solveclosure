@@ -2,7 +2,22 @@ from solve2eqclosure.image_analysis.calculate_area_and_volume import calculate_a
 import numpy as np
 
 def calculate_source_terms(img, voxel, cbd_surface_porosity, D_s):
-    # calculates the source terms for the DIMENSIONAL closure problem
+    """
+    Calculates the source terms for the DIMENSIONAL closure problem PDE.
+    
+    Args:
+        img (nd array): The electrode image.
+        voxel (float): The voxel size in meters.
+        cbd_surface_porosity (float): The CBD surface porosity.
+        D_s (float): The diffusivity of the AM in m2.s-1.
+
+    Returns: 
+        dimensional_S_vol (float): The volume source term.
+        dimensional_bc_elec (float): The AM-elec boundary source term.  
+        dimensional_bc_cbd (float): The AM-CBD boundary source term.  
+        total_area (float): The total surface area (with surface porosity of CBD accounted for).
+        V_am (float): The total volume of the AM. 
+    """
 
     area_am_elec, area_am_cbd, total_area, V_am = calculate_area_and_volume(img, voxel, cbd_surface_porosity)
     
