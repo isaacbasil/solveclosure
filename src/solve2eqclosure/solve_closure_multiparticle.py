@@ -49,7 +49,7 @@ def solve_closure_multiparticle(case_dir, img_path, label_map_path, voxel, cbd_s
     check_for_existing_solutions(case_dir)
 
     # copy necessary template files 
-    cmd = f"cp -r ./src/solve2eqclosure/template_dirs/multiparticle/* {case_dir}"
+    cmd = f"cp -r ./src/solve2eqclosure/templates/multiparticle/* {case_dir}"
     subprocess.run(["bash", "-c", cmd], check=True)
 
     # clean directory
@@ -179,10 +179,6 @@ def solve_closure_multiparticle(case_dir, img_path, label_map_path, voxel, cbd_s
 
         cmd = f"{load_of_cmd} && decomposePar -case {of_case_dir} -allRegions"
         subprocess.run(["bash", "-c", cmd], check=True)
-
-    if write_sbatch:
-        sbatch_launch_path = of_case_dir + "/sbatch_launch_script.sh"
-        write_sbatch_launch_script(sbatch_launch_path, n_procs, multiparticle=True)  
 
 
     # check area and volume, and add it to the closure data dictionary

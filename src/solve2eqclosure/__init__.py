@@ -1,2 +1,3 @@
 from .solve_closure_multiparticle import solve_closure_multiparticle
 from .process_closure_results import process_closure_results
+from .generate_label_map import generate_label_map

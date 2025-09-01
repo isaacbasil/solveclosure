@@ -9,7 +9,7 @@ import numpy as np
 
 def test_two_squares():
     # preparing paths 
-    demo_path = os.path.join(os.getcwd(), "demos/two_squares/")
+    demo_path = os.path.join(os.getcwd(), "examples/two_squares/")
     case_dir = os.path.join(demo_path, "results/")
     img_path = os.path.join(demo_path, "two_squares.tif")
     label_map_path = os.path.join(demo_path, "two_squares_label_map.tif")
