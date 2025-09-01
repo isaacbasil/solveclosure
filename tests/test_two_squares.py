@@ -39,5 +39,5 @@ def test_two_squares():
     cmd = f"rm -r {case_dir}"
     subprocess.run(["bash", "-c", cmd], check=True)
 
-    # check that value calcuulated agrees with validated results
+    # check that value calculated agrees with validated results
     assert np.round(s_surf_ave_steady_state, 1) == -170.9
