@@ -8,8 +8,8 @@ import re
 import tifffile as tif
 import pickle
 
-from solve2eqclosure.utility import add_slash, check_for_existing_solutions, find_latest_openfoam_installation, write_sbatch_launch_script
-from solve2eqclosure.image_analysis import calculate_area_and_volume, calculate_source_terms, check_and_write_area_and_volume_total, return_x_positions, subdivide_image_using_label_map
+from solve2eqclosure.utility import add_slash, check_for_existing_solutions, find_latest_openfoam_installation
+from solve2eqclosure.image_analysis import calculate_source_terms, check_and_write_area_and_volume_total, return_x_positions, subdivide_image_using_label_map
 from solve2eqclosure.openfoam_case_setup.make_blockMeshDict import make_blockMeshDict 
 from solve2eqclosure.openfoam_case_setup.make_topoSetDict import make_topoSetDict
 from solve2eqclosure.openfoam_case_setup.multiparticle import write_bc_file_multiparticle, write_fvOptions_file_multiparticle, write_myFunctionsDict_multiparticle, write_p_file, write_regionProperties_file, write_surface_integral_func, write_volume_integral_func, write_thermophysicalProperties_file, write_decomposeParDict_file
@@ -17,7 +17,7 @@ from solve2eqclosure.openfoam_case_setup.multiparticle import write_bc_file_mult
 
 # ============ Inputs ==============
 
-def solve_closure_multiparticle(case_dir, img_path, label_map_path, voxel, cbd_surf_por, D_s, load_of_cmd=None, allow_flux=True, parallelise=False, n_procs=8, run_solver=True, T_offset=1e5, write_sbatch=False):
+def solve_closure_multiparticle(case_dir, img_path, label_map_path, voxel, cbd_surf_por, D_s, load_of_cmd=None, allow_flux=True, parallelise=False, n_procs=8, run_solver=True, T_offset=1e5):
 
     """
     Solves the closure problem as described in [1] using OpenFOAM. 
@@ -34,8 +34,7 @@ def solve_closure_multiparticle(case_dir, img_path, label_map_path, voxel, cbd_s
         parallelise (bool): Set to True to solve in parallel.   
         n_procs (int): The number of processors to use if parallelisation chosen. 
         run_solver (bool): Set to false to setup the OpenFOAM case without running the solver. 
-        T_offset (float): A large number to make compatible with OpenFOAM's solvers (see docs.)
-        write_sbatch (bool): Set to True to write a launch script to run on a HPC using slurm. 
+        T_offset (float): A large number to make compatible with OpenFOAM's solvers (see docs.) 
         
     Returns:
         No returns. Operates on a filesystem directory. 
