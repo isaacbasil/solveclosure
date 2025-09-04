@@ -149,7 +149,7 @@ Modify:
 3. The number of processors you want to use.  
 4. The path to your python launch script.  
 
-The python launch script should run ``solve2eqclosure`` almost identically to
+The python launch script should run ``solveclosure`` almost identically to
 how you would run it locally, but you must provide the command to load
 OpenFOAM, e.g.::
 

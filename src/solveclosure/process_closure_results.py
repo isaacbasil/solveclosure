@@ -1,7 +1,7 @@
 import numpy as np 
 import pickle
 import subprocess
-from solve2eqclosure.utility import load_openfoam_data
+from solveclosure.utility import load_openfoam_data
 
 
 def process_closure_results(case_dir, cbd_surf_por, sep_surf_por, write=True, multiparticle=True):

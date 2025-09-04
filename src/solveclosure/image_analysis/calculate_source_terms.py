@@ -1,4 +1,4 @@
-from solve2eqclosure.image_analysis.calculate_area_and_volume import calculate_area_and_volume
+from solveclosure.image_analysis.calculate_area_and_volume import calculate_area_and_volume
 import numpy as np
 
 def calculate_source_terms(img, voxel, cbd_surface_porosity, D_s):

@@ -1,7 +1,7 @@
 # Tests the solve_closure_multiparticle script by ensuring that it can solve and reproduce validated results for the steady state solution. 
 
 import os
-import solve2eqclosure
+import solveclosure
 import subprocess
 import pickle
 import numpy as np
@@ -25,7 +25,7 @@ def test_two_squares():
     subprocess.run(["bash", "-c", cmd], check=False)
 
     # solve 
-    solve2eqclosure.solve_closure_multiparticle(case_dir, img_path, label_map_path, voxel, cbd_surface_porosity, D_s)
+    solveclosure.solve_closure_multiparticle(case_dir, img_path, label_map_path, voxel, cbd_surface_porosity, D_s)
 
     # read steady state closure value
     closure_data_path = os.path.join(case_dir, "closure_data.pickle")

@@ -1,4 +1,4 @@
-solve2eqclosure package
+solveclosure package
 =======================
 
 Subpackages
@@ -7,32 +7,32 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
-   solve2eqclosure.image_analysis
-   solve2eqclosure.utility
+   solveclosure.image_analysis
+   solveclosure.utility
 
 Submodules
 ----------
 
-solve2eqclosure.generate\_label\_map module
+solveclosure.generate\_label\_map module
 -------------------------------------------
 
-.. automodule:: solve2eqclosure.generate_label_map
+.. automodule:: solveclosure.generate_label_map
    :members:
    :undoc-members:
    :show-inheritance:
 
-solve2eqclosure.process\_closure\_results module
+solveclosure.process\_closure\_results module
 ------------------------------------------------
 
-.. automodule:: solve2eqclosure.process_closure_results
+.. automodule:: solveclosure.process_closure_results
    :members:
    :undoc-members:
    :show-inheritance:
 
-solve2eqclosure.solve\_closure\_multiparticle module
+solveclosure.solve\_closure\_multiparticle module
 ----------------------------------------------------
 
-.. automodule:: solve2eqclosure.solve_closure_multiparticle
+.. automodule:: solveclosure.solve_closure_multiparticle
    :members:
    :undoc-members:
    :show-inheritance:
@@ -40,7 +40,7 @@ solve2eqclosure.solve\_closure\_multiparticle module
 Module contents
 ---------------
 
-.. automodule:: solve2eqclosure
+.. automodule:: solveclosure
    :members:
    :undoc-members:
    :show-inheritance:

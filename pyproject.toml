@@ -3,9 +3,9 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "solve2eqclosure"
+name = "solveclosure"
 version = "0.1.0"
-description = "A package that solves the closure problem for the 2-equation model published by Paten et al."
+description = "A package that solves the closure problem for the dual-continuum model published by Paten et al."
 authors = [
   { name="Isaac Paten", email="isaacbpaten@gmail.com" }
 ]
@@ -22,5 +22,5 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/isaacbasil/solve2eqclosure.git"
+Homepage = "https://github.com/isaacbasil/solveclosure.git"
 

@@ -8,11 +8,11 @@ import re
 import tifffile as tif
 import pickle
 
-from solve2eqclosure.utility import add_slash, check_for_existing_solutions, find_latest_openfoam_installation
-from solve2eqclosure.image_analysis import calculate_source_terms, check_and_write_area_and_volume_total, return_x_positions, subdivide_image_using_label_map
-from solve2eqclosure.openfoam_case_setup.make_blockMeshDict import make_blockMeshDict 
-from solve2eqclosure.openfoam_case_setup.make_topoSetDict import make_topoSetDict
-from solve2eqclosure.openfoam_case_setup.multiparticle import write_bc_file_multiparticle, write_fvOptions_file_multiparticle, write_myFunctionsDict_multiparticle, write_p_file, write_regionProperties_file, write_surface_integral_func, write_volume_integral_func, write_thermophysicalProperties_file, write_decomposeParDict_file
+from solveclosure.utility import add_slash, check_for_existing_solutions, find_latest_openfoam_installation
+from solveclosure.image_analysis import calculate_source_terms, check_and_write_area_and_volume_total, return_x_positions, subdivide_image_using_label_map
+from solveclosure.openfoam_case_setup.make_blockMeshDict import make_blockMeshDict 
+from solveclosure.openfoam_case_setup.make_topoSetDict import make_topoSetDict
+from solveclosure.openfoam_case_setup.multiparticle import write_bc_file_multiparticle, write_fvOptions_file_multiparticle, write_myFunctionsDict_multiparticle, write_p_file, write_regionProperties_file, write_surface_integral_func, write_volume_integral_func, write_thermophysicalProperties_file, write_decomposeParDict_file
 
 
 # ============ Inputs ==============
@@ -49,7 +49,7 @@ def solve_closure_multiparticle(case_dir, img_path, label_map_path, voxel, cbd_s
     check_for_existing_solutions(case_dir)
 
     # copy necessary template files 
-    cmd = f"cp -r ./src/solve2eqclosure/templates/multiparticle/* {case_dir}"
+    cmd = f"cp -r ./src/solveclosure/templates/multiparticle/* {case_dir}"
     subprocess.run(["bash", "-c", cmd], check=True)
 
     # clean directory
@@ -203,7 +203,7 @@ def solve_closure_multiparticle(case_dir, img_path, label_map_path, voxel, cbd_s
             cmd = f"{load_of_cmd} && reconstructPar -case {of_case_dir} -allRegions"
             subprocess.run(["bash", "-c", cmd], check=False)
 
-        from solve2eqclosure.process_closure_results import process_closure_results
+        from solveclosure.process_closure_results import process_closure_results
         process_closure_results(case_dir, cbd_surf_por, sep_surf_por=1.0, write=True, multiparticle=True)        
 
 

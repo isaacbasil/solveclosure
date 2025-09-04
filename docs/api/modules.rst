@@ -1,7 +1,7 @@
-solve2eqclosure
+solveclosure
 ===============
 
 .. toctree::
    :maxdepth: 4
 
-   solve2eqclosure
+   solveclosure
