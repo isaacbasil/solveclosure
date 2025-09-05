@@ -9,7 +9,7 @@ def write_bc_file_multiparticle(file_path, particle_name, elec_source, cbd_sourc
         cbd_source (float): The source term at the AM-CBD boundary.   
         neighbour_ids (list): The IDs of particles which share a boundary with particle i.
         T_offset (float): A large number to prevent the OpenFOAM solver from encountering negative 'temperatures'.  
-        allow_flux(bool): False for Option 1, True for Option 2 (see documentation).
+        allow_flux(bool): True for Option 1, False for Option 2 (see documentation).
 
     Returns:
     """

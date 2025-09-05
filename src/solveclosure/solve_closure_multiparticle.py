@@ -30,7 +30,7 @@ def solve_closure_multiparticle(case_dir, img_path, label_map_path, voxel, cbd_s
         cbd_surf_por (float): The surface porosity of the CBD phase. 
         D_s (float): The diffusivity of the AM in m2.s-1 
         load_of_cmd (str): The command which must be executed in your terminal to load OpenFOAM. If not provided OpenFOAM installations will be searched for. 
-        allow_flux (bool): Set to False for closure Option 1 (see article). 
+        allow_flux (bool): Set to False for closure Option 2 (see article). 
         parallelise (bool): Set to True to solve in parallel.   
         n_procs (int): The number of processors to use if parallelisation chosen. 
         run_solver (bool): Set to false to setup the OpenFOAM case without running the solver. 
