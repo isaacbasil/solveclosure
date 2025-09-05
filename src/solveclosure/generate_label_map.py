@@ -6,13 +6,16 @@ from scipy import ndimage as ndi
 from skimage import measure, morphology, segmentation, filters
 from matplotlib import pyplot as plt
 
-def generate_label_map(input_path, write_path, show_image=False):
+def generate_label_map(input_path, write_path, show_image=False, sigma=2.0, compactness=0.01):
     """
     Generates and writes a label map for an electrode image using a watershed algorithm. 
 
     Args:
         input_path (str): The path to the electrode image (electrolyte labelled 0, active material 1, and CBD 2).
         write_path (str): The path to where the label map will be written to.
+        show_image (bool): Shows slice of the label map (useful for debugging).
+        sigma (float): The standard deviation for Gaussian smoothing applied to the distance map. Prevents over-segmentation.
+        compactness (float): A parameter for the watershed algorithm which adjusts region shapes. 
         
     Returns: 
     """
@@ -37,6 +40,9 @@ def generate_label_map(input_path, write_path, show_image=False):
     # Compute distance transform
     distance = ndi.distance_transform_edt(am_mask)
 
+    # Smooth distance map to prevent over-segmentation 
+    distance = ndi.gaussian_filter(distance, sigma=sigma)  
+
     # Identify local maxima
     local_maxi = morphology.local_maxima(distance)
 
@@ -44,7 +50,7 @@ def generate_label_map(input_path, write_path, show_image=False):
     markers = measure.label(local_maxi)
 
     # Apply watershed
-    label_map = segmentation.watershed(-distance, markers, mask=am_mask)
+    label_map = segmentation.watershed(-distance, markers, mask=am_mask, compactness=compactness)
 
 
     if show_image:

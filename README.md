@@ -1,6 +1,6 @@
 # solveclosure
 
-Solves the closure problem for the 2-equation model published by Paten et. al
+Solves the closure problem for the dual-continuum model published by Paten et. al
 
 ## 🚀 Installing solveclosure
 
