@@ -33,30 +33,33 @@ The PDEs
 Option 1
 ~~~~~~~~
 
-This PDE is solved if the ``allow_flux`` argument is set to ``False``.
+This PDE is solved if the ``allow_flux`` argument is set to ``True``,
+which is the default,
 
 .. math::
 
    \begin{aligned}
-   \partial_{t}s_{i}^{t} & = D_{k}\Delta s_{i}^{t}+H(t)\frac{1}{F}\frac{A_{i}}{V_{k_{i}}} && \text{in } \Omega_{k_{i}}^{\mathrm{micro}}, \\
-   -\mathbf{n}\cdot D_{k}\nabla s_{i}^{t} & = H(t)\frac{1}{F} && \text{at } \partial\Omega_{k_{i},e}^{\mathrm{in}}, \\
-   \mathbf{n}\cdot\nabla s_{i} & = 0 && \text{at } \partial\Omega_{k_{i},k_{j}}^{\mathrm{in}}, \\
-   s_{i}^{t} & = 0 && \text{at } t=0.
+   \partial_{t}s_{i}^{t} & =D_{k}\Delta s_{i}^{t}+H\left(t\right)\frac{1}{F}\frac{A_{i}}{V_{k_{i}}} & \textrm{in }\Omega_{k_{i}}^{\mathrm{micro}},\\
+   -\boldsymbol{n}\cdot D_{k}\nabla s_{i}^{t} & =\frac{1}{F} & \textrm{at }\partial\Omega_{k_{i},e}^{\mathrm{in}},\\
+   \boldsymbol{n}\cdot\nabla s_{i} & =-\varepsilon_{\mathrm{cbd}}^{\mathrm{surf}}\frac{1}{FD_{k}} & \textrm{at }\partial\Omega_{k_{i},\mathrm{cbd}}^{\mathrm{in}},\\
+   \boldsymbol{n}\cdot\nabla s_{i} & =\boldsymbol{n}\cdot\nabla s_{j} & \textrm{at }\partial\Omega_{k_{i},k_{j}}^{\mathrm{in}},\\
+   s_{i} & =s_{j} & \textrm{at }\partial\Omega_{k_{i},k_{j}}^{\mathrm{in}},\\
+   s_{i}^{t} & =0 & \textrm{at t=0.}
    \end{aligned}
 
 Option 2
 ~~~~~~~~
 
-This PDE is solved if the ``allow_flux`` argument is set to ``True``,
-which is the default.
+This PDE is solved if the ``allow_flux`` argument is set to ``False``.
 
 .. math::
 
    \begin{aligned}
-   \partial_{t}s_{i}^{t} & = D_{k}\Delta s_{i}^{t}+H(t)\frac{1}{F}\frac{A_{i}}{V_{k_{i}}} && \text{in } \Omega_{k_{i}}^{\mathrm{micro}}, \\
-   -\mathbf{n}\cdot D_{k}\nabla s_{i}^{t} & = H(t)\frac{1}{F} && \text{at } \partial\Omega_{k_{i},e}^{\mathrm{in}}, \\
-   \mathbf{n}\cdot\nabla s_{i} & = \mathbf{n}\cdot\nabla s_{j} && \text{at } \partial\Omega_{k_{i},k_{j}}, \\
-   s_{i} & = s_{j} && \text{at } \partial\Omega_{k_{i},k_{j}}.
+   \partial_{t}s_{i}^{t} & =D_{k}\Delta s_{i}^{t}+H\left(t\right)\frac{1}{F}\frac{A_{i}}{V_{k_{i}}} & \textrm{in }\Omega_{k_{i}}^{\mathrm{micro}},\\
+   -\boldsymbol{n}\cdot D_{k}\nabla s_{i}^{t} & =\frac{1}{F} & \textrm{at }\partial\Omega_{k_{i},e}^{\mathrm{in}},\\
+   \boldsymbol{n}\cdot\nabla s_{i} & =-\varepsilon_{\mathrm{cbd}}^{\mathrm{surf}}\frac{1}{FD_{k}} & \textrm{at }\partial\Omega_{k_{i},\mathrm{cbd}}^{\mathrm{in}},\\
+   \boldsymbol{n}\cdot\nabla s_{i} & =0 & \textrm{at }\partial\Omega_{k_{i},k_{j}}^{\mathrm{in}},\\
+   s_{i}^{t} & =0 & \textrm{at t=0.}
    \end{aligned}
 
 Dimensionless Form
@@ -78,9 +81,11 @@ For Option 1, this gives
 .. math::
 
    \begin{aligned}
-   \hat{\Delta}\hat{s_{i}} & = -1 && \text{in } \Omega_{k_{i}}^{\mathrm{micro}}, \\
-   \mathbf{n}\cdot\hat{\nabla}\hat{s_{i}} & = -\frac{V_{k_{i}}}{A_{i}L} && \text{at } \partial\Omega_{k_{i},e}^{\mathrm{in}}, \\
-   \mathbf{n}\cdot\nabla\hat{s_{i}} & = 0 && \text{at } \partial\Omega_{k_{i},k_{j}}^{\mathrm{in}}.
+   \partial_{\hat{t}}\hat{s_{i}}^{t} & =\hat{\Delta}\hat{s_{i}}^{t}+1 & \textrm{in }\Omega_{k}^{\mathrm{micro}},\\
+   \boldsymbol{n}\cdot\hat{\nabla}\hat{s_{i}}^{t} & =-\frac{V_{k_{i}}}{A_{i}L} & \textrm{at }\partial\Omega_{k,e}^{\mathrm{in}},\\
+   \boldsymbol{n}\cdot\hat{\nabla}\hat{s_{i}}^{t} & =-\varepsilon_{\mathrm{cbd}}^{\mathrm{surf}}\frac{V_{k_{i}}}{A_{i}L} & \textrm{at }\partial\Omega_{k,\mathrm{cbd}}^{\mathrm{in}},\\
+   \boldsymbol{n}\cdot\nabla\hat{s_{i}} & =\boldsymbol{n}\cdot\nabla\hat{s_{j}} & \textrm{at }\partial\Omega_{k_{i},k_{j}}^{\mathrm{in}},\\
+   \hat{s_{i}} & =\hat{s_{j}} & \textrm{at }\partial\Omega_{k_{i},k_{j}}^{\mathrm{in}}.
    \end{aligned}
 
 Solution of the PDEs
@@ -93,9 +98,9 @@ The closure problem can be solved in ``multiparticle`` or ``per particle``
 mode. In general, multiparticle mode is recommended – it is better
 maintained, uses a more robust solver, and allows for both options
 of the closure problem PDE. Per particle mode is mainly for very large
-cases. It exploits the form of the PDE in Option 1 to solve the closure
+cases. It exploits the form of the PDE in Option 2 to solve the closure
 problem for each particle independently, and thus scales very well with
-mesh size. Therefore, only Option 1 is supported for per particle cases. 
+mesh size. Therefore, only Option 2 is supported for per particle cases. 
 
 The Solvers
 ~~~~~~~~~~~
