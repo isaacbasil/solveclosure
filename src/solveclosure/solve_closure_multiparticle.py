@@ -49,7 +49,8 @@ def solve_closure_multiparticle(case_dir, img_path, label_map_path, voxel, cbd_s
     check_for_existing_solutions(case_dir)
 
     # copy necessary template files 
-    cmd = f"cp -r ./src/solveclosure/templates/multiparticle/* {case_dir}"
+    template_path = os.path.join(os.path.dirname(__file__), "templates/multiparticle/")
+    cmd = f"cp -r {template_path}* {case_dir}"
     subprocess.run(["bash", "-c", cmd], check=True)
 
     # clean directory
