@@ -149,7 +149,7 @@ You should first copy the template ``sbatch_launch_script`` from the templates
 directory. This gives an outline of a script for a HPC that uses Slurm. 
 Modify:
 
-1. The ``#SBATCH --partition`` command.  
+1. The ``#SBATCH --partition`` command. Contact your system administrator if unsure what to put here.  
 2. The path to activate your virtual environment.  
 3. The number of processors you want to use.  
 4. The path to your python launch script.  
