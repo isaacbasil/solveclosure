@@ -14,7 +14,7 @@ def generate_label_map(input_path, write_path, show_image=False, sigma=2.0, comp
         input_path (str): The path to the electrode image (electrolyte labelled 0, active material 1, and CBD 2).
         write_path (str): The path to where the label map will be written to.
         show_image (bool): Shows slice of the label map (useful for debugging).
-        sigma (float): The standard deviation for Gaussian smoothing applied to the distance map. Prevents over-segmentation.
+        sigma (float): The standard deviation for Gaussian smoothing applied to the distance map. Prevents over-segmentation (higher sigma = fewer particles).
         compactness (float): A parameter for the watershed algorithm which adjusts region shapes. 
         
     Returns: 

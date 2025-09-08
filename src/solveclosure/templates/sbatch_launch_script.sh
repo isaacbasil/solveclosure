@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --partition=name_of_machine
-#SBATCH --ntasks={n_procs}
+#SBATCH --ntasks=number_of_procs
 #SBATCH --cpus-per-task=1
 #SBATCH --nodes=1
 #SBATCH --comment="OpenFOAM"
