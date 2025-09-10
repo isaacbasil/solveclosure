@@ -28,7 +28,6 @@ def calculate_source_terms(img, voxel, cbd_surface_porosity, D_s):
 
     if area_am_cbd != 0:
         dimensional_bc_cbd = cbd_surface_porosity * - 1 / (D_s *F)
-        print("\n The dimensional gradient BC at the CBD interface is ", dimensional_bc_cbd)
     else:
         dimensional_bc_cbd = False
 
