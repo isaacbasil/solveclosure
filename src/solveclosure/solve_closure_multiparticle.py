@@ -105,15 +105,15 @@ def solve_closure_multiparticle(case_dir, img_path, label_map_path, voxel, cbd_s
 
     print("Running OpenFOAM commands, blockMesh, topoSet, splitMeshRegions.")
     # Run blockMesh
-    cmd = f"{load_of_cmd} && blockMesh -case {of_case_dir} > log.blockMesh 2>&1"
+    cmd = f"{load_of_cmd} && blockMesh -case {of_case_dir} > {of_case_dir}log.blockMesh 2>&1"
     subprocess.run(["bash", "-c", cmd], check=True)
 
     # Run topoSet
-    cmd = f"{load_of_cmd} && topoSet -case {of_case_dir} > log.topoSet 2>&1"
+    cmd = f"{load_of_cmd} && topoSet -case {of_case_dir} > {of_case_dir}log.topoSet 2>&1"
     subprocess.run(["bash", "-c", cmd], check=True)
 
     # splitMeshRegions
-    cmd = f"{load_of_cmd} && splitMeshRegions -case {of_case_dir} -cellZonesOnly -overwrite > log.splitMeshRegions 2>&1"
+    cmd = f"{load_of_cmd} && splitMeshRegions -case {of_case_dir} -cellZonesOnly -overwrite > {of_case_dir}log.splitMeshRegions 2>&1"
     subprocess.run(["bash", "-c", cmd], check=True)
 
     # get rid of Elec and CBD dirs
@@ -183,7 +183,7 @@ def solve_closure_multiparticle(case_dir, img_path, label_map_path, voxel, cbd_s
             cmd = f"cp {decomposeParDict_path} {of_case_dir}/system/{particle_name}/"
             subprocess.run(["bash", "-c", cmd], check=True)
 
-        cmd = f"{load_of_cmd} && decomposePar -case {of_case_dir} -allRegions > log.decomposePar 2>&1"
+        cmd = f"{load_of_cmd} && decomposePar -case {of_case_dir} -allRegions > {of_case_dir}log.decomposePar 2>&1"
         subprocess.run(["bash", "-c", cmd], check=True)
 
 
@@ -200,15 +200,15 @@ def solve_closure_multiparticle(case_dir, img_path, label_map_path, voxel, cbd_s
     if run_solver: 
         print("Running solver.")
         if parallelise:
-            cmd = f"{load_of_cmd} && mpirun -np {n_procs} chtMultiRegionFoam -parallel -case {of_case_dir} > log.solver 2>&1"
+            cmd = f"{load_of_cmd} && mpirun -np {n_procs} chtMultiRegionFoam -parallel -case {of_case_dir} > {of_case_dir}log.solver 2>&1"
         else:
-            cmd = f"{load_of_cmd} && chtMultiRegionFoam -case {of_case_dir} > log.solver 2>&1"
+            cmd = f"{load_of_cmd} && chtMultiRegionFoam -case {of_case_dir} > {of_case_dir}log.solver 2>&1"
         subprocess.run(["bash", "-c", cmd], check=False)
 
         # reconstruct is parallelised 
         if parallelise:
             print("Reconstructing results.")
-            cmd = f"{load_of_cmd} && reconstructPar -case {of_case_dir} -allRegions > log.reconstructPar 2>&1"
+            cmd = f"{load_of_cmd} && reconstructPar -case {of_case_dir} -allRegions > {of_case_dir}log.reconstructPar 2>&1"
             subprocess.run(["bash", "-c", cmd], check=False)
 
         from solveclosure.process_closure_results import process_closure_results
