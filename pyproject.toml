@@ -22,7 +22,7 @@ dependencies = [
 ]
 
 [tool.setuptools.package-data]
-"solveclosure" = ["templates/*"]
+"solveclosure" = ["templates/**/*"]
 
 [project.urls]
 Homepage = "https://github.com/isaacbasil/solveclosure.git"
