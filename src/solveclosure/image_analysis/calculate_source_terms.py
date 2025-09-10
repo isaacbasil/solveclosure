@@ -26,10 +26,6 @@ def calculate_source_terms(img, voxel, cbd_surface_porosity, D_s):
 
     dimensional_bc_elec = - 1 / (D_s *F)
 
-
-    print("\n The dimensional source term added to fvOptions is ", dimensional_S_vol)
-    print("\n The dimensional gradient BC is ", dimensional_bc_elec)
-
     if area_am_cbd != 0:
         dimensional_bc_cbd = cbd_surface_porosity * - 1 / (D_s *F)
         print("\n The dimensional gradient BC at the CBD interface is ", dimensional_bc_cbd)

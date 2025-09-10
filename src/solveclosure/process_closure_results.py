@@ -109,7 +109,7 @@ def process_closure_results(case_dir, cbd_surf_por, sep_surf_por, write=True, mu
  
 
     for type in ["elec", "cbd", "sep"]:
-        print(f"\n No files found for type {type} for {no_file_found[type]} particles \n")
+        print(f"\n{no_file_found[type]} particles did not have an AM-{type} surface integral file.")
 
     
     # divde by A
@@ -135,9 +135,9 @@ def process_closure_results(case_dir, cbd_surf_por, sep_surf_por, write=True, mu
     global_s_surf_ave_transient_corr = global_s_surf_ave_transient - s_vol_ave_transient
 
 
-    print("\n The global steady state surface average BEFORE correction is ", global_s_surf_ave_ss, "\n")
-    print("\n The global volume average at the final time is ", s_vol_ave_final, "\n")
-    print("\n The global steady state surface average AFTER correction is ", global_s_surf_ave_ss_corr, "\n")
+    print("\nThe global steady state surface average BEFORE correction is ", global_s_surf_ave_ss, "\n")
+    print("\nThe global volume average at the final time is ", s_vol_ave_final, "\n")
+    print("\nThe global steady state surface average AFTER correction is ", global_s_surf_ave_ss_corr, "\n")
     
     # write results to closure data
     closure_data["global s surface average steady"] = global_s_surf_ave_ss_corr

@@ -1,11 +1,6 @@
 # this file builds the topoSetDict using the splitMeshRegions method, which is faster than the previous methods.
 
-import tifffile as tif 
 import numpy as np
-import sys 
-import os
-import time 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 def make_topoSetDict(topoSetDict_path, img, multi_particle=False, label_map=None):
     """
@@ -71,9 +66,7 @@ FoamFile
     }}"""
         
         return input_content + "\n" + block
-
-
-    start_time = time.time()    
+  
 
     F = 96485
 
@@ -156,6 +149,4 @@ FoamFile
         output_file.write(topo_content)
 
 
-    end_time = time.time()
-    print("The time taken to write the topoSet file is ", str(end_time - start_time), " s")
 

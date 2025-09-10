@@ -94,5 +94,4 @@ boundaryField
 
     with open(file_path, 'w') as f:
         f.write(content)
-        print("\n the bc file written \n")
 

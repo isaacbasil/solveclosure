@@ -1,12 +1,8 @@
-
-import shutil
 import subprocess
-import numpy as np 
 import os 
-import sys
-import re
 import tifffile as tif
 import pickle
+import time 
 
 from solveclosure.utility import add_slash, check_for_existing_solutions, find_latest_openfoam_installation
 from solveclosure.image_analysis import calculate_source_terms, check_and_write_area_and_volume_total, return_x_positions, subdivide_image_using_label_map
@@ -48,6 +44,9 @@ def solve_closure_multiparticle(case_dir, img_path, label_map_path, voxel, cbd_s
 
     check_for_existing_solutions(case_dir)
 
+    start_time = time.time()
+    
+    print("Copying template files for OpenFOAM case.")
     # copy necessary template files 
     template_path = os.path.join(os.path.dirname(__file__), "templates/multiparticle/")
     cmd = f"cp -r {template_path}* {case_dir}"
@@ -57,10 +56,11 @@ def solve_closure_multiparticle(case_dir, img_path, label_map_path, voxel, cbd_s
     of_case_dir = case_dir + "openfoam_case/"
     cmd = f"{load_of_cmd} && foamListTimes -rm -case {of_case_dir}"
     subprocess.run(["bash", "-c", cmd], check=True)
-    cmd = f"cd {of_case_dir} && rm -rf ../closure_data.pickle postProcessing/ process* 0/particle_* constant/polyMesh/ constant/particle_* system/particle_* system/myFunctionsDict"
+    cmd = f"cd {of_case_dir} && rm -rf ../closure_data.pickle postProcessing/ process* 0/particle_* constant/polyMesh/ constant/particle_* system/particle_* system/myFunctionsDict log*"
     subprocess.run(["bash", "-c", cmd], check=False)
 
     # load tif 
+    print("Analysing image.")
     img = tif.imread(img_path)
     label_map = tif.imread(label_map_path)
 
@@ -85,6 +85,8 @@ def solve_closure_multiparticle(case_dir, img_path, label_map_path, voxel, cbd_s
                     "T offset": T_offset,
                     }
 
+    
+    print("Generating files for OpenFOAM case.")
     # make blockmeshDict 
     blockMeshDict_path = case_dir + "/openfoam_case/system/blockMeshDict"
     make_blockMeshDict(blockMeshDict_path, img, voxel)
@@ -101,16 +103,17 @@ def solve_closure_multiparticle(case_dir, img_path, label_map_path, voxel, cbd_s
     #update_control_dict(control_dict_path, particle_names)
 
 
+    print("Running OpenFOAM commands, blockMesh, topoSet, splitMeshRegions.")
     # Run blockMesh
-    cmd = f"{load_of_cmd} && blockMesh -case {of_case_dir}"
+    cmd = f"{load_of_cmd} && blockMesh -case {of_case_dir} > log.blockMesh 2>&1"
     subprocess.run(["bash", "-c", cmd], check=True)
 
     # Run topoSet
-    cmd = f"{load_of_cmd} && topoSet -case {of_case_dir}"
+    cmd = f"{load_of_cmd} && topoSet -case {of_case_dir} > log.topoSet 2>&1"
     subprocess.run(["bash", "-c", cmd], check=True)
 
     # splitMeshRegions
-    cmd = f"{load_of_cmd} && splitMeshRegions -case {of_case_dir} -cellZonesOnly -overwrite"
+    cmd = f"{load_of_cmd} && splitMeshRegions -case {of_case_dir} -cellZonesOnly -overwrite > log.splitMeshRegions 2>&1"
     subprocess.run(["bash", "-c", cmd], check=True)
 
     # get rid of Elec and CBD dirs
@@ -122,6 +125,7 @@ def solve_closure_multiparticle(case_dir, img_path, label_map_path, voxel, cbd_s
     write_regionProperties_file(regionprops_path, particle_names)
 
 
+    print("Calculating and writing source terms and BCs for each particle.")
     # create source terms file
     for key, subsection in subsections.items():
         
@@ -169,6 +173,7 @@ def solve_closure_multiparticle(case_dir, img_path, label_map_path, voxel, cbd_s
 
 
     if parallelise:
+        print("Decomposing for parallel run.")
         # make the decomposeParDict file
         decomposeParDict_path = of_case_dir + "/system/decomposeParDict"
         write_decomposeParDict_file(decomposeParDict_path, n_procs)
@@ -178,7 +183,7 @@ def solve_closure_multiparticle(case_dir, img_path, label_map_path, voxel, cbd_s
             cmd = f"cp {decomposeParDict_path} {of_case_dir}/system/{particle_name}/"
             subprocess.run(["bash", "-c", cmd], check=True)
 
-        cmd = f"{load_of_cmd} && decomposePar -case {of_case_dir} -allRegions"
+        cmd = f"{load_of_cmd} && decomposePar -case {of_case_dir} -allRegions > log.decomposePar 2>&1"
         subprocess.run(["bash", "-c", cmd], check=True)
 
 
@@ -193,18 +198,21 @@ def solve_closure_multiparticle(case_dir, img_path, label_map_path, voxel, cbd_s
 
     # =========== Run solver if requested =====
     if run_solver: 
+        print("Running solver.")
         if parallelise:
-            cmd = f"{load_of_cmd} && mpirun -np {n_procs} chtMultiRegionFoam -parallel -case {of_case_dir}"
+            cmd = f"{load_of_cmd} && mpirun -np {n_procs} chtMultiRegionFoam -parallel -case {of_case_dir} > log.solver 2>&1"
         else:
-            cmd = f"{load_of_cmd} && chtMultiRegionFoam -case {of_case_dir}"
+            cmd = f"{load_of_cmd} && chtMultiRegionFoam -case {of_case_dir} > log.solver 2>&1"
         subprocess.run(["bash", "-c", cmd], check=False)
 
         # reconstruct is parallelised 
         if parallelise:
-            cmd = f"{load_of_cmd} && reconstructPar -case {of_case_dir} -allRegions"
+            print("Reconstructing results.")
+            cmd = f"{load_of_cmd} && reconstructPar -case {of_case_dir} -allRegions > log.reconstructPar 2>&1"
             subprocess.run(["bash", "-c", cmd], check=False)
 
         from solveclosure.process_closure_results import process_closure_results
+        print("Processing closure results.")
         process_closure_results(case_dir, cbd_surf_por, sep_surf_por=1.0, write=True, multiparticle=True)        
 
 
