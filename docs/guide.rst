@@ -151,7 +151,7 @@ Modify:
 
 1. The ``#SBATCH --partition`` command. Contact your system administrator if unsure what to put here.  
 2. The path to activate your virtual environment.  
-3. The number of processors you want to use.  
+3. The number of processors you want to use (the #SBATCH --ntasks argument).  
 4. The path to your python launch script.  
 
 The python launch script should run ``solveclosure`` almost identically to
@@ -159,6 +159,10 @@ how you would run it locally, but you must provide the command to load
 OpenFOAM, e.g.::
 
    module load openfoam/2006_220610
+
+Then, launch the job using::
+
+   sbatch sbatch_launch_script.sh
 
 Checklist:
 

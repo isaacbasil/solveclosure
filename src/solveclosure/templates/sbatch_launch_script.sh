@@ -5,6 +5,8 @@
 #SBATCH --nodes=1
 #SBATCH --comment="OpenFOAM"
 #SBATCH --exclusive
+#SBATCH --output=solveclosure.out
+#SBATCH --error=solveclosure.err
 
 #module purge
 export OMP_NUM_THREADS=1
