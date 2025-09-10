@@ -213,6 +213,9 @@ def solve_closure_multiparticle(case_dir, img_path, label_map_path, voxel, cbd_s
 
         from solveclosure.process_closure_results import process_closure_results
         print("Processing closure results.")
-        process_closure_results(case_dir, cbd_surf_por, sep_surf_por=1.0, write=True, multiparticle=True)        
+        process_closure_results(case_dir, cbd_surf_por, sep_surf_por=1.0, write=True, multiparticle=True)  
+
+    end_time = time.time()
+    print("\nThe total run time was ", round(end_time - start_time, 1), " seconds.")      
 
 
