@@ -137,6 +137,9 @@ variable under the keys:
 - ``global s surface average transient``  
 - ``global s surface average steady``  
 
+To look at the microscale fields. you can open the ``case.foam`` file within the OpenFOAM case using Paraview. 
+The closure variable field is called ``T``, since OpenFOAM is normally solving for temperature.
+
 Running on a High-Performance Computer (HPC)
 --------------------------------------------
 
