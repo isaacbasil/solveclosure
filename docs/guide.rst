@@ -177,3 +177,6 @@ Checklist:
 
 * Ensure the number of processors in your sbatch launch script matches
   that in your python launch script. 
+
+* Ensure that the python package is accessible by the HPC nodes (your virtual environment may not exist on the HPC). 
+Contact your system administrator to do this.  

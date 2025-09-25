@@ -103,7 +103,7 @@ def solve_closure_multiparticle(case_dir, img_path, label_map_path, voxel, cbd_s
     #update_control_dict(control_dict_path, particle_names)
 
 
-    print("Running OpenFOAM commands, blockMesh, topoSet, splitMeshRegions.")
+    print("Running OpenFOAM commands: blockMesh, topoSet, splitMeshRegions.")
     # Run blockMesh
     cmd = f"{load_of_cmd} && blockMesh -case {of_case_dir} > {of_case_dir}log.blockMesh 2>&1"
     subprocess.run(["bash", "-c", cmd], check=True)
