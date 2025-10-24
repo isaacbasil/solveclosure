@@ -23,6 +23,9 @@ def generate_label_map(input_path, write_path, show_image=False, sigma=2.0, comp
     def check_all_particles(img, label_map):
         n_particles = max(np.unique(label_map))
 
+        if ((label_map == 0.0) & (img == 1.0)).any():
+            raise ValueError("Some AM regions are were not labelled.")
+
         for i in range(1, n_particles + 1):
             particle = np.copy(img[label_map == i])
             # check no electrolyte
@@ -31,6 +34,25 @@ def generate_label_map(input_path, write_path, show_image=False, sigma=2.0, comp
             # check am present
             if not np.any(particle == 1):
                 raise ValueError(f"Particle {i} contains no AM")
+            
+    def gap_filling(am_mask, label_map):
+        # Sometimes not all AM regions are labeled. This merges unlabelled regions with their nearest neighbour. 
+
+        unlabelled_mask = (label_map == 0) & am_mask
+
+        filled_label_map = label_map.copy()
+
+        # Compute distance transform *to nearest labelled pixel* and get indices of nearest labelled pixel
+        dist, nearest_label_indices = ndi.distance_transform_edt(
+            (filled_label_map > 0),
+            return_indices=True
+        )
+
+        # Map unlabeled pixels to the nearest labelled pixel’s label
+        nearest_labels = filled_label_map[tuple(nearest_label_indices)]
+        filled_label_map[unlabelled_mask] = nearest_labels[unlabelled_mask]
+
+        return filled_label_map
 
 
     img = tif.imread(input_path)
@@ -52,6 +74,8 @@ def generate_label_map(input_path, write_path, show_image=False, sigma=2.0, comp
     # Apply watershed
     label_map = segmentation.watershed(-distance, markers, mask=am_mask, compactness=compactness)
 
+    if ((label_map == 0.0) & (img == 1.0)).any():
+        label_map = gap_filling(am_mask, label_map)
 
     if show_image:
         if img.shape[2] > 1e5:
