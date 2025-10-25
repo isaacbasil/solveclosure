@@ -44,7 +44,7 @@ def generate_label_map(input_path, write_path, show_image=False, sigma=2.0, comp
 
         # Compute distance transform *to nearest labelled pixel* and get indices of nearest labelled pixel
         dist, nearest_label_indices = ndi.distance_transform_edt(
-            (filled_label_map > 0),
+            (filled_label_map == 0),
             return_indices=True
         )
 
