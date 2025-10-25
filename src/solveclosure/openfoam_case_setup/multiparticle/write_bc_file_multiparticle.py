@@ -52,7 +52,7 @@ boundaryField
     }}
 
 """
-    if cbd_source:
+    if cbd_source is not False: # to avoid bug when cbd_source = 0.0 (surface porosity 0)
         content += f"""
     {particle_name}_to_CBD
     {{
