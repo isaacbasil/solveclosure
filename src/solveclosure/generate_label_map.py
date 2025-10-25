@@ -35,22 +35,56 @@ def generate_label_map(input_path, write_path, show_image=False, sigma=2.0, comp
             if not np.any(particle == 1):
                 raise ValueError(f"Particle {i} contains no AM")
             
-    def gap_filling(am_mask, label_map):
+            # check particle not fragmented
+            labelled_components, num_components = measure.label(label_map == i, connectivity=1, return_num=True)
+            if num_components > 1:
+                raise ValueError(f"Particle {i} is fragmented into {num_components} components.")
+            
+            
+    
+    def gap_filling(am_mask, label_map, max_iter=1000):
         # Sometimes not all AM regions are labeled. This merges unlabelled regions with their nearest neighbour. 
 
+        def remove_islands(am_mask, filled_label_map, unlabelled_mask, struct):
+            # unlabelled regions surrounded by electrolyte or CBD will not be reached by particle propogation. 
+
+            unlabelled_components = measure.label(unlabelled_mask, connectivity=1)
+
+            dilated_unlabelled_comps = ndi.grey_dilation(unlabelled_components, footprint=struct)
+
+            for i in range(1, np.max(unlabelled_components) + 1):
+                region = unlabelled_components == i 
+                dilated_region = ndi.binary_dilation(region, structure=struct)
+                region_surroundings_mask = dilated_region & (~region)
+                region_surroundings  = am_mask[region_surroundings_mask]
+                # check if all surroundings are electrolyte or CBD. In this case it's an island. 
+                if np.all(~region_surroundings): 
+                    max_label = np.max(filled_label_map)
+                    filled_label_map[region] = max_label + 1
+
+            return filled_label_map
+ 
+        
         unlabelled_mask = (label_map == 0) & am_mask
 
         filled_label_map = label_map.copy()
 
-        # Compute distance transform *to nearest labelled pixel* and get indices of nearest labelled pixel
-        dist, nearest_label_indices = ndi.distance_transform_edt(
-            (filled_label_map == 0),
-            return_indices=True
-        )
+        struct = ndi.generate_binary_structure(filled_label_map.ndim, 1)
 
-        # Map unlabeled pixels to the nearest labelled pixel’s label
-        nearest_labels = filled_label_map[tuple(nearest_label_indices)]
-        filled_label_map[unlabelled_mask] = nearest_labels[unlabelled_mask]
+        filled_label_map = remove_islands(am_mask, filled_label_map, unlabelled_mask, struct)
+
+        for _ in range(max_iter):
+            dilated_map = ndi.grey_dilation(filled_label_map, footprint=struct)
+
+            new_labels = (filled_label_map == 0) & am_mask # both AM and unlabelled
+            
+            if not np.any(new_labels):
+                break 
+
+            filled_label_map[new_labels] = dilated_map[new_labels]
+
+        if np.any((filled_label_map == 0) & am_mask):
+            raise ValueError(f"Gap filling did not complete successfully even after {max_iter} iterations. Try increasing max_iter.")
 
         return filled_label_map
 
