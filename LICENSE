@@ -1,28 +1,42 @@
-BSD 3-Clause License
+------------------------------------------------------------
+SOFTWARE EVALUATION LICENSE
+Institut de Mécanique des Fluides de Toulouse (IMFT), french research laboratory, Toulouse, France.
+------------------------------------------------------------
 
-Copyright (c) 2025, isaacbasil
+Definitions
+SOFTWARE:  The solveclosure software, version 0.1.0, in source code form, written by Isaac Paten at the IMFT research laboratory.
 
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
+LICENSOR: L'INSTITUT NATIONAL POLYTECHNIQUE DE TOULOUSE, a public scientific and professional establishment, having SIRET No. 193 113 818  00127, APE code 8542 Z, having its registered office at 6, allée Emile Monso - B.P. 34038 - 31029 TOULOUSE CEDEX 4, France, acting in its own name and on its own behalf, and on behalf of l'Institut de Mécanique des Fluides de Toulouse (IMFT), UMR n°5502.
 
-1. Redistributions of source code must retain the above copyright notice, this
-   list of conditions and the following disclaimer.
+1. INTENT/PURPOSE 
+This agreement determines the conditions in which the LICENSOR, who has the rights to the SOFTWARE, grants to the LICENSEE a license for research and evaluation purposes only, excluding any commercial use.
 
-2. Redistributions in binary form must reproduce the above copyright notice,
-   this list of conditions and the following disclaimer in the documentation
-   and/or other materials provided with the distribution.
+2. LICENSEE 
+Any person or organization who receives the SOFTWARE with a copy of this license. 
 
-3. Neither the name of the copyright holder nor the names of its
-   contributors may be used to endorse or promote products derived from
-   this software without specific prior written permission.
+3. RIGHTS GRANTED
+The rights to use and copy the SOFTWARE, subject to the restrictions described in this agreement.
+The rights to modify and compile the SOFTWARE when it's provided in source code form, subject to the restrictions described in this agreement. 
+For the SOFTWARE provided in binary form only, LICENSEE undertakes to not decompile, disassemble, decrypt, extract the components or perform reverse engineering except to the extent expressly provided by law.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+5. SCOPE OF THE LICENSE 
+- NON-COMMERCIAL license for research and evaluation purposes ONLY. 
+- NO right to commercialize the SOFTWARE, or any derivative work, without separate agreement with the LICENSOR. 
+
+6. MODIFICATION OF THE SOFTWARE
+License permits LICENSEE to modify the SOFTWARE provided in source code form for research and evaluation purposes only. 
+
+7. REDISTRIBUTION
+- License permits LICENSEE to redistribute verbatim copies of the SOFTWARE, accompanied with a copy of this license. 
+- License DOES NOT permit LICENSEE to redistribute modified versions of the SOFTWARE provided in source code form. 
+- License DOES NOT permit LICENSEE to commercialize the SOFTWARE or any derivative work of the SOFTWARE. 
+
+8. FEE/ROYALTY 
+- LICENSEE pays no royalty for this license. 
+- LICENSEE and any third parties must enter a new agreement for any use beyond scope of license. Please contact the IMFT technology transfer office (email numerique@toulouse-tech-transfer.com) for further information. 
+
+9. NO WARRANTY 
+The SOFTWARE is provided "as is" without warranty of any kind, either expressed or implied, including, but not limited to, the implied warranties of merchantability and fitness for a particular purpose. The entire risk as to the quality and performance of the program is with the LICENSEE. 
+
+10. NO LIABILITY
+In no event unless required by applicable law or agreed to in writing will any copyright owner be liable to LICENSEE for damages, including any general, special, incidental or consequential damages arising out of the use or inability to use the program (including but not limited to loss of data or data being rendered inaccurate or losses sustained by LICENSEE or third parties or a failure of the program to operate with other programs), even if such holder has been advised of the possibility of such damages. 
