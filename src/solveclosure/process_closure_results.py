@@ -4,7 +4,7 @@ import subprocess
 from solveclosure.utility import load_openfoam_data
 
 
-def process_closure_results(case_dir, cbd_surf_por, sep_surf_por, write=True, multiparticle=True):
+def process_closure_results(case_dir, cbd_surf_por, sep_surf_por, dimensionless, L=None, write=True, multiparticle=True):
     """
     Processes the closure results from a solved OpenFOAM case, and writes them to the closure_data dictionary. 
     
@@ -12,6 +12,8 @@ def process_closure_results(case_dir, cbd_surf_por, sep_surf_por, write=True, mu
         case_dir (str): The path to the directory where the OpenFOAM case was solved.
         cbd_surf_por (float): The CBD surface porosity.
         sep_surf_por (float): The separator surface porosity.
+        dimensionless (bool): Whether the case is dimensionless or not.
+        L (float): The lengthscale used (m) to non-dimensionalise the problem.
         write (bool): To set to False to vot write results to the closure_dict, but only print them.
         multiparticle (bool): To set to True for a multiparticle case.
 
@@ -21,17 +23,18 @@ def process_closure_results(case_dir, cbd_surf_por, sep_surf_por, write=True, mu
 
     def check_steady_state(t, s_surf, label):
         # checks that OpenFOAM solver reached steady state
-        s1 = s_surf[-50]
-        t1 = t[-50]
+        s1 = s_surf[-5]
+        t1 = t[-5]
         s2 = s_surf[-1]
-        t2 = s_surf[-1]
+        t2 = t[-1]
+        abs_grad = abs(s2 - s1) / (t2 - t1)
 
-        if abs(s1 - s2) > 1:
+        if abs_grad > 0.1:
             print(f"\n It appears that the closure problem for Particle {label} has not reached steady state: \
-                    The value at time {t1} s is {s1}, whilst at {t2} s it is {s2}")
+                    The (absolute) gradient of the surface average is {abs_grad} which is greater than 0.1")
 
     if any([string in case_dir for string in ["multiparticle", "multi_particle", "with_interparticle_flux"]]) and not multiparticle:
-        response = input("\n Multiparticle is set to False, but this looks like a multiparticle case. Are you sure you want to conitune? (y/n)").strip().lower()
+        response = input("\nMultiparticle is set to False, but this looks like a multiparticle case. Are you sure you want to conitune? (y/n)").strip().lower()
         if response != "y":
             print("Aborting.")
             exit()
@@ -113,11 +116,16 @@ def process_closure_results(case_dir, cbd_surf_por, sep_surf_por, write=True, mu
 
     
     # divde by A
-    total_A = closure_data["total area (surface porosity included)"]
+    if dimensionless:
+        total_A = closure_data["total area (surface porosity included)"] / L**2
+        total_particle_V = closure_data["total particle volume"] / L**3
+    else:
+        total_A = closure_data["total area (surface porosity included)"]
+        total_particle_V = closure_data["total particle volume"]
 
     global_s_surf_ave_transient = global_sum_s_surf_int_transient / total_A
 
-    s_vol_ave_transient = global_sum_s_vol_int_transient / closure_data["total particle volume"]
+    s_vol_ave_transient = global_sum_s_vol_int_transient / total_particle_V
 
     global_s_surf_ave_ss = global_s_surf_ave_transient[-1]
 

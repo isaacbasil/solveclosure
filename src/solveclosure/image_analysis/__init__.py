@@ -1,5 +1,6 @@
 from .calculate_area_and_volume import calculate_area_and_volume
-from .calculate_source_terms import calculate_source_terms
+from .calculate_source_terms_dimensional import calculate_source_terms_dimensional
+from .calculate_source_terms_dimensionless import calculate_source_terms_dimensionless
 from .check_and_write_area_and_volume_total import check_and_write_area_and_volume_total
 from .return_x_positions import return_x_positions
 from .subdivide_image_using_label_map import subdivide_image_using_label_map

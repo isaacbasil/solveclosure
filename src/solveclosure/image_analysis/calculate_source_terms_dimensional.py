@@ -1,7 +1,7 @@
 from solveclosure.image_analysis.calculate_area_and_volume import calculate_area_and_volume
 import numpy as np
 
-def calculate_source_terms(img, voxel, cbd_surface_porosity, D_s):
+def calculate_source_terms_dimensional(img, voxel, cbd_surface_porosity, D_s):
     """
     Calculates the source terms for the DIMENSIONAL closure problem PDE.
     

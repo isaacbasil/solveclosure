@@ -17,7 +17,7 @@ cbd_surface_porosity = 0.5
 D_s = 4e-14
 
 # solve 
-solveclosure.solve_closure_multiparticle(case_dir, img_path, label_map_path, voxel, cbd_surface_porosity, D_s)
+solveclosure.solve_closure_multiparticle(case_dir, img_path, label_map_path, voxel, cbd_surface_porosity, D_s=D_s, dimensionless=False)
 
 
 

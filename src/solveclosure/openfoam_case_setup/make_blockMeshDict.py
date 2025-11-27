@@ -1,6 +1,6 @@
 # makes the blockMeshDict file for OpenFOAM based on the image dimensions.
 
-def make_blockMeshDict(file_path, img, voxel):
+def make_blockMeshDict(file_path, img, voxel, dimensionless, L):
     """
     Writes the blockMeshDict file with the correct dimensions
     
@@ -8,11 +8,19 @@ def make_blockMeshDict(file_path, img, voxel):
         file_path (str): The absolute path to the blockMeshDict file for the OpenFOAM case. 
         img (nd array): The electrode image.
         voxel (float): The voxel size in meters.
+        dimensionless (bool): Whether the case is dimensionless or not.
+        L (float): The lengthscale used (m) to non-dimensionalise the problem.
 
     Returns:
     """
 
     nx, ny, nz = img.shape
+
+    if dimensionless:
+        L_voxel = L / voxel # lengthscale in voxels
+        scale = 1 / L_voxel
+    else:
+        scale = voxel
 
     content = f"""
 FoamFile
@@ -23,7 +31,7 @@ FoamFile
     object      blockMeshDict;
 }}
 
-scale   {voxel};
+scale   {scale};
 
 vertices
 (
