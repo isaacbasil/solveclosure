@@ -115,7 +115,7 @@ def solve_closure_multiparticle(case_dir, img_path, label_map_path, voxel, cbd_s
                     }
 
     
-    print("Generating files for OpenFOAM case.")
+    print("\nGenerating files for OpenFOAM case.")
     # make blockmeshDict 
     blockMeshDict_path = case_dir + "/openfoam_case/system/blockMeshDict"
     make_blockMeshDict(blockMeshDict_path, img, voxel, dimensionless, L)

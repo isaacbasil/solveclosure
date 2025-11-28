@@ -72,8 +72,9 @@ thus the problem solely depends on electrode geometry.
 .. math::
 
    \begin{aligned}
-   s_{i} & = \frac{L^{2}}{D_{k}F}\frac{A_{i}}{V_{k_{i}}}\hat{s_{i}}, \\
-   x & = \hat{x}L.
+   s_{i}^{t} & = \frac{L}{D_{k}F}\hat{s_{i}}^{t}, \\
+   x & = \hat{x}L, \\ 
+   t & = \hat{t}\frac{L^{2}}{D_{k}}. 
    \end{aligned}
 
 For Option 1, this gives
@@ -81,11 +82,12 @@ For Option 1, this gives
 .. math::
 
    \begin{aligned}
-   \partial_{\hat{t}}\hat{s_{i}}^{t} & =\hat{\Delta}\hat{s_{i}}^{t}+1 & \textrm{in }\Omega_{k}^{\mathrm{micro}},\\
-   \boldsymbol{n}\cdot\hat{\nabla}\hat{s_{i}}^{t} & =-\frac{V_{k_{i}}}{A_{i}L} & \textrm{at }\partial\Omega_{k,e}^{\mathrm{in}},\\
-   \boldsymbol{n}\cdot\hat{\nabla}\hat{s_{i}}^{t} & =-\varepsilon_{\mathrm{cbd}}^{\mathrm{surf}}\frac{V_{k_{i}}}{A_{i}L} & \textrm{at }\partial\Omega_{k,\mathrm{cbd}}^{\mathrm{in}},\\
-   \boldsymbol{n}\cdot\nabla\hat{s_{i}} & =\boldsymbol{n}\cdot\nabla\hat{s_{j}} & \textrm{at }\partial\Omega_{k_{i},k_{j}}^{\mathrm{in}},\\
-   \hat{s_{i}} & =\hat{s_{j}} & \textrm{at }\partial\Omega_{k_{i},k_{j}}^{\mathrm{in}}.
+   \partial_{\hat{t}}\hat{s_{i}}^{t} & =\hat{\Delta}\hat{s_{i}}^{t}+\frac{LA_{i}}{V_{k_{i}}} & \textrm{in }\Omega_{k}^{\mathrm{micro}},\\
+   \boldsymbol{n}\cdot\hat{\nabla}\hat{s_{i}}^{t} & =-1 & \textrm{at }\partial\Omega_{k,e}^{\mathrm{in}},\\
+   \boldsymbol{n}\cdot\hat{\nabla}\hat{s_{i}}^{t} & =-\varepsilon_{\mathrm{cbd}}^{\mathrm{surf}} & \textrm{at }\partial\Omega_{k,\mathrm{cbd}}^{\mathrm{in}},\\
+   \boldsymbol{n}\cdot\nabla\hat{s_{i}}^{t} & =\boldsymbol{n}\cdot\nabla\hat{s_{j}}^{t} & \textrm{at }\partial\Omega_{k_{i},k_{j}}^{\mathrm{in}},\\
+   \hat{s_{i}}^{t} & =\hat{s_{j}}^{t} & \textrm{at }\partial\Omega_{k_{i},k_{j}}^{\mathrm{in}}.\\
+   \hat{s_{i}}^{t} & =0 & \textrm{at t=0.}
    \end{aligned}
 
 Solution of the PDEs
