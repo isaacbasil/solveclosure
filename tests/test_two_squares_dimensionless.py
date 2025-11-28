@@ -39,4 +39,4 @@ def test_two_squares_dimensionless():
     subprocess.run(["bash", "-c", cmd], check=True)
 
     # check that value calculated agrees with validated results
-    assert np.round(s_surf_ave_steady_state, 4) == -0.0555
+    assert np.round(s_surf_ave_steady_state, 6) == -0.055516
