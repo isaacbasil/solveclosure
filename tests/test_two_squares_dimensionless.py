@@ -1,4 +1,4 @@
-# Tests the solve_closure_multiparticle script by ensuring that it can solve and reproduce validated results for the steady state solution. 
+# Tests the solve_closure_multiparticle function in dimensionless form by ensuring that it can solve and reproduce validated results for the steady state solution. 
 
 import os
 import solveclosure
@@ -7,7 +7,7 @@ import pickle
 import numpy as np
 
 
-def test_two_squares():
+def test_two_squares_dimensionless():
     # preparing paths 
     demo_path = os.path.join(os.getcwd(), "examples/two_squares/")
     case_dir = os.path.join(demo_path, "results/")
@@ -18,14 +18,13 @@ def test_two_squares():
     # parameters 
     voxel = 1e-7
     cbd_surface_porosity = 0.5
-    D_s = 4e-14
 
     # create a temporary directory to test
     cmd = f"mkdir {case_dir}"
     subprocess.run(["bash", "-c", cmd], check=False)
 
     # solve 
-    solveclosure.solve_closure_multiparticle(case_dir, img_path, label_map_path, voxel, cbd_surface_porosity, D_s=D_s, dimensionless=False)
+    solveclosure.solve_closure_multiparticle(case_dir, img_path, label_map_path, voxel, cbd_surface_porosity, dimensionless=True)
 
     # read steady state closure value
     closure_data_path = os.path.join(case_dir, "closure_data.pickle")
@@ -40,4 +39,4 @@ def test_two_squares():
     subprocess.run(["bash", "-c", cmd], check=True)
 
     # check that value calculated agrees with validated results
-    assert np.round(s_surf_ave_steady_state, 1) == -170.9
+    assert np.round(s_surf_ave_steady_state, 4) == -0.0555
