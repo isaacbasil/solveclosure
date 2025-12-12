@@ -76,7 +76,7 @@ FoamFile
     nx, ny, nz = img.shape
 
     if multi_particle:
-        n_particles = np.max(np.unique(label_map))
+        n_particles = int(np.max(np.unique(label_map)))
         particle_cell_lists = {}
         for i in range(1, n_particles + 1):
             particle_cell_lists[i] = []
