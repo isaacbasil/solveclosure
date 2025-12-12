@@ -98,7 +98,7 @@ def subdivide_image_using_label_map(label_map_path, entire_img, show_subsections
         print("\n Warning: the original tif is in boolean format. This may cause problems in certain scripts \n")
         entire_img = entire_img.astype(int)
 
-    n_particles = np.max(label_map)
+    n_particles = int(np.max(label_map))
 
     centres = calculate_centre_coordinates(label_map)
 
