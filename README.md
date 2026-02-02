@@ -1,6 +1,9 @@
 # solveclosure
 
-Solves the closure problem for the dual-continuum model published by Paten et. al
+Solves the closure problem for the dual-continuum model published by Paten et. al. See the following two articles for more information: 
+
+https://doi.org/10.1149/1945-7111/ae335f
+https://doi.org/10.1149/1945-7111/ae3527
 
 ## 🚀 Installing solveclosure
 
