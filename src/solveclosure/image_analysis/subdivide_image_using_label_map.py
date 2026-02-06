@@ -112,8 +112,11 @@ def subdivide_image_using_label_map(label_map_path, entire_img, show_subsections
         max_coords[i] = []
         particle_member_coords = np.where(label_map == i)
         for idx in range(3):
-            min_coord = np.min(particle_member_coords[idx])
-            max_coord = np.max(particle_member_coords[idx])
+            try:
+                min_coord = np.min(particle_member_coords[idx])
+                max_coord = np.max(particle_member_coords[idx])
+            except ValueError as e:
+                raise ValueError("One possible cause of the exception above is that the label map values are discontinuous. For example the max particle ID is 10 but no cells have the label 9.") from e
             # pad the min and max coordinates by 1 to include the boundary
             min_coords[i].append(min_coord - 1 if min_coord > 0 else min_coord)
             max_coords[i].append(max_coord + 1 if max_coord < entire_img.shape[idx] - 1 else max_coord)
