@@ -101,6 +101,7 @@ def generate_label_map(input_path, write_path, show_image=False, sigma=2.0, comp
 
     # Identify local maxima
     local_maxi = morphology.local_maxima(distance)
+    local_maxi = local_maxi & am_mask # Only consider local maxima within the AM regions
 
     # Label markers
     markers = measure.label(local_maxi)
