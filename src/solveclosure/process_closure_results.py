@@ -30,8 +30,9 @@ def process_closure_results(case_dir, cbd_surf_por, sep_surf_por, dimensionless,
         abs_grad = abs(s2 - s1) / (t2 - t1)
 
         if abs_grad > 0.1:
-            print(f"\n It appears that the closure problem for Particle {label} has not reached steady state: \
-                    The (absolute) gradient of the surface average is {abs_grad} which is greater than 0.1")
+            print(f"""\n It appears that the closure problem for Particle {label} has not reached steady state:
+                    The (absolute) gradient of the surface average is {abs_grad} which is greater than 0.1. 
+                    Increase the endTime value in system/controlDict and rerun the OpenFOAM solver.""")
 
     if any([string in case_dir for string in ["multiparticle", "multi_particle", "with_interparticle_flux"]]) and not multiparticle:
         response = input("\nMultiparticle is set to False, but this looks like a multiparticle case. Are you sure you want to conitune? (y/n)").strip().lower()
