@@ -1,8 +1,5 @@
-sphinx
-sphinx-rtd-theme
-tifffile
-numpy
-matplotlib
-scikit-image
-scipy
+# Packages needed to build the documentation (used by Read the Docs).
+# The package itself and its dependencies are installed from pyproject.toml.
+sphinx>=7.2
+sphinx-rtd-theme>=2.0
 imagecodecs

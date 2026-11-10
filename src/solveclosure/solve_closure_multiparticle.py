@@ -34,9 +34,9 @@ def solve_closure_multiparticle(case_dir, img_path, label_map_path, voxel, cbd_s
         n_procs (int): The number of processors to use if parallelisation chosen. 
         run_solver (bool): Set to false to setup the OpenFOAM case without running the solver. 
         T_offset (float): A large number to make compatible with OpenFOAM's solvers (see docs). Default 1e5 for dimensional and 10 for dimensionless. 
-        time_params (dict, optional): A dictionary specifying time parameters for the solver, 
-        with entries "T_end" (the final simulation time), "dt" (the intial time step), "write_interval" 
-        (the interval at which spatial fields are written). If None, default values will be used.
+        time_params (dict, optional): A dictionary specifying time parameters for the solver,
+            with entries "T_end" (the final simulation time), "dt" (the intial time step), "write_interval"
+            (the interval at which spatial fields are written). If None, default values will be used.
         
     Returns:
         No returns. Operates on a filesystem directory. 

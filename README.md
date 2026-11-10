@@ -1,5 +1,9 @@
 # solveclosure
 
+[![Documentation Status](https://readthedocs.org/projects/solveclosure/badge/?version=latest)](https://solveclosure.readthedocs.io/en/latest/)
+
+📖 **Documentation:** https://solveclosure.readthedocs.io
+
 Solves the closure problem for the dual-continuum model published by Paten et. al. See the following two articles for more information: 
 
 https://doi.org/10.1149/1945-7111/ae335f

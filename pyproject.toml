@@ -24,6 +24,13 @@ dependencies = [
 [tool.setuptools.package-data]
 "solveclosure" = ["templates/**/*"]
 
+[project.optional-dependencies]
+docs = [
+    "sphinx>=7.2",
+    "sphinx-rtd-theme>=2.0",
+]
+
 [project.urls]
-Homepage = "https://github.com/isaacbasil/solveclosure.git"
+Homepage = "https://github.com/isaacbasil/solveclosure"
+Documentation = "https://solveclosure.readthedocs.io"
 

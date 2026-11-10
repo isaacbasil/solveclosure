@@ -1,3 +1,4 @@
+"""Writers for the OpenFOAM files of a multiparticle case."""
 from .write_fvOptions_file_multiparticle import write_fvOptions_file_multiparticle
 from .write_bc_file_multiparticle import write_bc_file_multiparticle
 from .write_thermophysicalProperties_file import write_thermophysicalProperties_file

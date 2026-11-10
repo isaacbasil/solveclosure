@@ -1,3 +1,4 @@
+"""Image analysis of the electrode microstructure: areas, volumes, source terms and particle subdivision."""
 from .calculate_area_and_volume import calculate_area_and_volume
 from .calculate_source_terms_dimensional import calculate_source_terms_dimensional
 from .calculate_source_terms_dimensionless import calculate_source_terms_dimensionless
