@@ -30,6 +30,9 @@ package to generate this if needed.
 The PDEs
 --------
 
+The notation follows the articles listed on the home page, which define
+all of the symbols used below.
+
 Option 1
 ~~~~~~~~
 
@@ -39,12 +42,12 @@ which is the default,
 .. math::
 
    \begin{aligned}
-   \partial_{t}s_{i}^{t} & =D_{k}\Delta s_{i}^{t}+H\left(t\right)\frac{1}{F}\frac{A_{i}}{V_{k_{i}}} & \textrm{in }\Omega_{k_{i}}^{\mathrm{micro}},\\
-   -\boldsymbol{n}\cdot D_{k}\nabla s_{i}^{t} & =\frac{1}{F} & \textrm{at }\partial\Omega_{k_{i},e}^{\mathrm{in}},\\
-   \boldsymbol{n}\cdot\nabla s_{i} & =-\varepsilon_{\mathrm{cbd}}^{\mathrm{surf}}\frac{1}{FD_{k}} & \textrm{at }\partial\Omega_{k_{i},\mathrm{cbd}}^{\mathrm{in}},\\
-   \boldsymbol{n}\cdot\nabla s_{i} & =\boldsymbol{n}\cdot\nabla s_{j} & \textrm{at }\partial\Omega_{k_{i},k_{j}}^{\mathrm{in}},\\
-   s_{i} & =s_{j} & \textrm{at }\partial\Omega_{k_{i},k_{j}}^{\mathrm{in}},\\
-   s_{i}^{t} & =0 & \textrm{at t=0.}
+   \partial_{t}s_{i}^{t} & =D_{k}\Delta s_{i}^{t}+\frac{1}{F}\frac{A_{i}}{V_{k_{i}}} & \textrm{in }\Omega_{k_{i}},\\
+   -\boldsymbol{n}\cdot D_{k}\nabla s_{i}^{t} & =\frac{1}{F} & \textrm{at }\partial\Omega_{k_{i},e},\\
+   \boldsymbol{n}\cdot\nabla s_{i}^{t} & =-\varepsilon_{\mathrm{cbd}}^{\mathrm{surf}}\frac{1}{FD_{k}} & \textrm{at }\partial\Omega_{k_{i},\mathrm{cbd}},\\
+   \boldsymbol{n}\cdot\nabla s_{i}^{t} & =\boldsymbol{n}\cdot\nabla s_{j}^{t} & \textrm{at }\partial\Omega_{k_{i},k_{j}},\\
+   s_{i}^{t} & =s_{j}^{t} & \textrm{at }\partial\Omega_{k_{i},k_{j}},\\
+   s_{i}^{t} & =0 & \textrm{at }t=0.
    \end{aligned}
 
 Option 2
@@ -55,11 +58,11 @@ This PDE is solved if the ``allow_flux`` argument is set to ``False``.
 .. math::
 
    \begin{aligned}
-   \partial_{t}s_{i}^{t} & =D_{k}\Delta s_{i}^{t}+H\left(t\right)\frac{1}{F}\frac{A_{i}}{V_{k_{i}}} & \textrm{in }\Omega_{k_{i}}^{\mathrm{micro}},\\
-   -\boldsymbol{n}\cdot D_{k}\nabla s_{i}^{t} & =\frac{1}{F} & \textrm{at }\partial\Omega_{k_{i},e}^{\mathrm{in}},\\
-   \boldsymbol{n}\cdot\nabla s_{i} & =-\varepsilon_{\mathrm{cbd}}^{\mathrm{surf}}\frac{1}{FD_{k}} & \textrm{at }\partial\Omega_{k_{i},\mathrm{cbd}}^{\mathrm{in}},\\
-   \boldsymbol{n}\cdot\nabla s_{i} & =0 & \textrm{at }\partial\Omega_{k_{i},k_{j}}^{\mathrm{in}},\\
-   s_{i}^{t} & =0 & \textrm{at t=0.}
+   \partial_{t}s_{i}^{t} & =D_{k}\Delta s_{i}^{t}+\frac{1}{F}\frac{A_{i}}{V_{k_{i}}} & \textrm{in }\Omega_{k_{i}},\\
+   -\boldsymbol{n}\cdot D_{k}\nabla s_{i}^{t} & =\frac{1}{F} & \textrm{at }\partial\Omega_{k_{i},e},\\
+   \boldsymbol{n}\cdot\nabla s_{i}^{t} & =-\varepsilon_{\mathrm{cbd}}^{\mathrm{surf}}\frac{1}{FD_{k}} & \textrm{at }\partial\Omega_{k_{i},\mathrm{cbd}},\\
+   \boldsymbol{n}\cdot\nabla s_{i}^{t} & =0 & \textrm{at }\partial\Omega_{k_{i},k_{j}},\\
+   s_{i}^{t} & =0 & \textrm{at }t=0.
    \end{aligned}
 
 Dimensionless Form
@@ -72,9 +75,9 @@ thus the problem solely depends on electrode geometry.
 .. math::
 
    \begin{aligned}
-   s_{i}^{t} & = \frac{L}{D_{k}F}\hat{s_{i}}^{t}, \\
-   x & = \hat{x}L, \\ 
-   t & = \hat{t}\frac{L^{2}}{D_{k}}. 
+   s_{i}^{t} & = \frac{L}{D_{k}F}\hat{s}_{i}^{t}, \\
+   x & = \hat{x}L, \\
+   t & = \hat{t}\frac{L^{2}}{D_{k}}.
    \end{aligned}
 
 For Option 1, this gives
@@ -82,13 +85,15 @@ For Option 1, this gives
 .. math::
 
    \begin{aligned}
-   \partial_{\hat{t}}\hat{s_{i}}^{t} & =\hat{\Delta}\hat{s_{i}}^{t}+\frac{LA_{i}}{V_{k_{i}}} & \textrm{in }\Omega_{k}^{\mathrm{micro}},\\
-   \boldsymbol{n}\cdot\hat{\nabla}\hat{s_{i}}^{t} & =-1 & \textrm{at }\partial\Omega_{k,e}^{\mathrm{in}},\\
-   \boldsymbol{n}\cdot\hat{\nabla}\hat{s_{i}}^{t} & =-\varepsilon_{\mathrm{cbd}}^{\mathrm{surf}} & \textrm{at }\partial\Omega_{k,\mathrm{cbd}}^{\mathrm{in}},\\
-   \boldsymbol{n}\cdot\nabla\hat{s_{i}}^{t} & =\boldsymbol{n}\cdot\nabla\hat{s_{j}}^{t} & \textrm{at }\partial\Omega_{k_{i},k_{j}}^{\mathrm{in}},\\
-   \hat{s_{i}}^{t} & =\hat{s_{j}}^{t} & \textrm{at }\partial\Omega_{k_{i},k_{j}}^{\mathrm{in}}.\\
-   \hat{s_{i}}^{t} & =0 & \textrm{at t=0.}
+   \partial_{\hat{t}}\hat{s}_{i}^{t} & =\hat{\Delta}\hat{s}_{i}^{t}+\frac{LA_{i}}{V_{k_{i}}} & \textrm{in }\Omega_{k_{i}},\\
+   \boldsymbol{n}\cdot\hat{\nabla}\hat{s}_{i}^{t} & =-1 & \textrm{at }\partial\Omega_{k_{i},e},\\
+   \boldsymbol{n}\cdot\hat{\nabla}\hat{s}_{i}^{t} & =-\varepsilon_{\mathrm{cbd}}^{\mathrm{surf}} & \textrm{at }\partial\Omega_{k_{i},\mathrm{cbd}},\\
+   \boldsymbol{n}\cdot\hat{\nabla}\hat{s}_{i}^{t} & =\boldsymbol{n}\cdot\hat{\nabla}\hat{s}_{j}^{t} & \textrm{at }\partial\Omega_{k_{i},k_{j}},\\
+   \hat{s}_{i}^{t} & =\hat{s}_{j}^{t} & \textrm{at }\partial\Omega_{k_{i},k_{j}},\\
+   \hat{s}_{i}^{t} & =0 & \textrm{at }\hat{t}=0.
    \end{aligned}
+
+Option 2 is non-dimensionalised in the same way.
 
 Solution of the PDEs
 --------------------
