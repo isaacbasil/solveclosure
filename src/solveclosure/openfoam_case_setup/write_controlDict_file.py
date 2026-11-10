@@ -1,6 +1,6 @@
 def write_controlDict_file(file_path, dimensionless, time_params):
     """
-    Writes the OpenFOAM controlDict file for a multiparticle case. Final time and t step will be different depending on whether dimensionless is True or False.  
+    Writes the OpenFOAM controlDict file. Final time and t step will be different depending on whether dimensionless is True or False.  
     
     Args:
         file_path (str): The absolute path to the p file for the OpenFOAM case. 

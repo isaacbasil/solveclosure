@@ -1,6 +1,6 @@
 def write_thermophysicalProperties_file(file_path, particle_name, D):
     """
-    Writes the thermophysicalProperties file for a multiparticle case.  
+    Writes the thermophysicalProperties file.  
     
     Args:
         file_path (str): The absolute path to the thermophysicalProperties file. 

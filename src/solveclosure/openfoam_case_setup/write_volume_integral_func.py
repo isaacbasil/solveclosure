@@ -1,6 +1,6 @@
 def write_volume_integral_func(file_path, particle_name):
     """
-    Writes the volume integral function file for a multiparticle case.  
+    Writes the volume integral function file.  
     
     Args:
         file_path (str): The absolute path to the volume integral function file. 

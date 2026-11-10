@@ -42,7 +42,7 @@ cbd_surface_porosity = 1.0 # the surface porosity of CBD. Set to 1 if CBD is not
 D_s = 4e-14 # the diffusivity of active material in m2.s-1.
 
 
-solveclosure.solve_closure_multiparticle(
+solveclosure.solve_closure(
     case_dir,
     img_path,
     label_map_path,

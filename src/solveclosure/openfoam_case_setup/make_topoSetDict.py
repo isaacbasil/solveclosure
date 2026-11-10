@@ -2,15 +2,14 @@
 
 import numpy as np
 
-def make_topoSetDict(topoSetDict_path, img, multi_particle=False, label_map=None):
+def make_topoSetDict(topoSetDict_path, img, label_map):
     """
     Writes the topoSetDict file for use with the splitMeshRegions method in Openfoam.
     
     Args:
         file_path (str): The absolute path to the topoSetDict file for the OpenFOAM case. 
         img (nd array): The electrode image.
-        multiparticle (bool): Set to True if a multiparticle case is being solved. 
-        label_map (nd array): A map identifying particle IDs (beginning at 1). Must be provided if multiparticle is True. 
+        label_map (nd array): A map identifying particle IDs (beginning at 1). Each particle becomes its own region.
 
     Returns:
     """
@@ -75,14 +74,10 @@ FoamFile
 
     nx, ny, nz = img.shape
 
-    if multi_particle:
-        n_particles = int(np.max(np.unique(label_map)))
-        particle_cell_lists = {}
-        for i in range(1, n_particles + 1):
-            particle_cell_lists[i] = []
-    else:
-        am_id_list = []
-        other_am_id_list = [] # ids for other AM particles in the subsection
+    n_particles = int(np.max(np.unique(label_map)))
+    particle_cell_lists = {}
+    for i in range(1, n_particles + 1):
+        particle_cell_lists[i] = []
 
     elec_id_list = [] 
     cbd_id_list = [] 
@@ -95,29 +90,18 @@ FoamFile
                 phase_id = int(img[i, j, k])
                 cell_id = i + nx * j + nx * ny * k
                 if phase_id == 1:
-                    if multi_particle:
-                        particle_cell_lists[label_map[i, j, k]].append(cell_id)
-                    else:
-                        am_id_list.append(cell_id)
+                    particle_cell_lists[label_map[i, j, k]].append(cell_id)
                 elif phase_id == 0:
                     elec_id_list.append(cell_id)
                 elif phase_id == 2:
                     cbd_id_list.append(cell_id)
-                elif phase_id == 3:
-                    if not multi_particle:
-                        other_am_id_list.append(cell_id)
                 else:
                     raise ValueError("Unknown phase id in image: " + str(phase_id))
     
     
-    if multi_particle:
-        for key, cell_list in particle_cell_lists.items():
-            region_label = f"c_am_{key}"
-            topo_content = add_topo_labelToCell(topo_content, cell_list, region_label)
-    else:
-        topo_content = add_topo_labelToCell(topo_content, am_id_list, "c_am")
-        if other_am_id_list:
-            topo_content = add_topo_labelToCell(topo_content, other_am_id_list, "c_other_am")
+    for key, cell_list in particle_cell_lists.items():
+        region_label = f"c_am_{key}"
+        topo_content = add_topo_labelToCell(topo_content, cell_list, region_label)
 
     if elec_id_list:
         topo_content = add_topo_labelToCell(topo_content, elec_id_list, "c_elec")
@@ -127,15 +111,10 @@ FoamFile
     
     
     # now define regions
-    if multi_particle:
-        for key, cell_list in particle_cell_lists.items():
-            region_label = f"c_am_{key}"
-            region_name = f"particle_{key}"
-            topo_content = add_region(topo_content, region_name, region_label)
-    else:
-        topo_content = add_region(topo_content, "AM", "c_am")
-        if other_am_id_list:
-            topo_content = add_region(topo_content, "otherAM", "c_other_am")
+    for key, cell_list in particle_cell_lists.items():
+        region_label = f"c_am_{key}"
+        region_name = f"particle_{key}"
+        topo_content = add_region(topo_content, region_name, region_label)
 
     if elec_id_list:
         topo_content = add_region(topo_content, "Elec", "c_elec")

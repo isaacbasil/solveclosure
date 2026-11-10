@@ -1,4 +1,4 @@
-# Tests the solve_closure_multiparticle function in dimensional form by ensuring that it can solve and reproduce validated results for the steady state solution. 
+# Tests the solve_closure function in dimensional form by ensuring that it can solve and reproduce validated results for the steady state solution. 
 
 import os
 import solveclosure
@@ -25,7 +25,7 @@ def test_two_squares_dimensional():
     subprocess.run(["bash", "-c", cmd], check=False)
 
     # solve 
-    solveclosure.solve_closure_multiparticle(case_dir, img_path, label_map_path, voxel, cbd_surface_porosity, D_s=D_s, dimensionless=False)
+    solveclosure.solve_closure(case_dir, img_path, label_map_path, voxel, cbd_surface_porosity, D_s=D_s, dimensionless=False)
 
     # read steady state closure value
     closure_data_path = os.path.join(case_dir, "closure_data.pickle")

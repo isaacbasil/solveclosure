@@ -3,17 +3,16 @@ import os
 import tifffile as tif
 import pickle
 import time 
+import warnings
 
 from solveclosure.utility import add_slash, check_for_existing_solutions, find_latest_openfoam_installation
 from solveclosure.image_analysis import calculate_source_terms_dimensional, calculate_source_terms_dimensionless, check_and_write_area_and_volume_total, return_x_positions, subdivide_image_using_label_map
-from solveclosure.openfoam_case_setup.make_blockMeshDict import make_blockMeshDict 
-from solveclosure.openfoam_case_setup.make_topoSetDict import make_topoSetDict
-from solveclosure.openfoam_case_setup.multiparticle import write_bc_file_multiparticle, write_fvOptions_file_multiparticle, write_myFunctionsDict_multiparticle, write_p_file, write_regionProperties_file, write_surface_integral_func, write_volume_integral_func, write_thermophysicalProperties_file, write_decomposeParDict_file, write_controlDict_file
+from solveclosure.openfoam_case_setup import make_blockMeshDict, make_topoSetDict, write_bc_file, write_fvOptions_file, write_myFunctionsDict, write_p_file, write_regionProperties_file, write_surface_integral_func, write_volume_integral_func, write_thermophysicalProperties_file, write_decomposeParDict_file, write_controlDict_file
 
 
 # ============ Inputs ==============
 
-def solve_closure_multiparticle(case_dir, img_path, label_map_path, voxel, cbd_surf_por, sep_surf_por=1.0, dimensionless=True, D_s=None, L=None, load_of_cmd=None, allow_flux=True, parallelise=False, n_procs=8, run_solver=True, T_offset=None, time_params=None):
+def solve_closure(case_dir, img_path, label_map_path, voxel, cbd_surf_por, sep_surf_por=1.0, dimensionless=True, D_s=None, L=None, load_of_cmd=None, allow_flux=True, parallelise=False, n_procs=8, run_solver=True, T_offset=None, time_params=None):
 
     """
     Solves the closure problem as described in [1] using OpenFOAM. 
@@ -68,8 +67,8 @@ def solve_closure_multiparticle(case_dir, img_path, label_map_path, voxel, cbd_s
     
     print("Copying template files for OpenFOAM case.")
     # copy necessary template files 
-    template_path = os.path.join(os.path.dirname(__file__), "templates/multiparticle/")
-    cmd = f"cp -r {template_path}* {case_dir}"
+    template_path = os.path.join(os.path.dirname(__file__), "templates/")
+    cmd = f"cp -r {template_path}openfoam_case {template_path}solver_settings {case_dir}"
     subprocess.run(["bash", "-c", cmd], check=True)
 
     # write controlDict file
@@ -122,7 +121,7 @@ def solve_closure_multiparticle(case_dir, img_path, label_map_path, voxel, cbd_s
 
     # make topoSetDict 
     topoSetDict_path = case_dir + "/openfoam_case/system/topoSetDict"
-    make_topoSetDict(topoSetDict_path, img, multi_particle=True, label_map=label_map)
+    make_topoSetDict(topoSetDict_path, img, label_map)
 
 
     particle_names = [f"particle_{key}" for key in subsections.keys()]
@@ -169,13 +168,13 @@ def solve_closure_multiparticle(case_dir, img_path, label_map_path, voxel, cbd_s
         # === files that are edited here (except p) and not be the user ===
 
         bc_path = of_case_dir + f"0/particle_{key}/T"
-        write_bc_file_multiparticle(bc_path, particle_name, bc_source_elec, bc_source_cbd, neighbour_ids, T_offset, allow_flux=allow_flux)
+        write_bc_file(bc_path, particle_name, bc_source_elec, bc_source_cbd, neighbour_ids, T_offset, allow_flux=allow_flux)
 
         p_path = of_case_dir + f"/0/particle_{key}/p"
         write_p_file(p_path, particle_name)
         
         fvOptions_path = of_case_dir + f"/constant/particle_{key}/fvOptions"
-        write_fvOptions_file_multiparticle(fvOptions_path, particle_name, S_vol)
+        write_fvOptions_file(fvOptions_path, particle_name, S_vol)
 
         thermoprops_path =  of_case_dir + f"/constant/particle_{key}/thermophysicalProperties"
         write_thermophysicalProperties_file(thermoprops_path, particle_name, D_s)
@@ -199,7 +198,7 @@ def solve_closure_multiparticle(case_dir, img_path, label_map_path, voxel, cbd_s
         subprocess.run(["bash", "-c", cmd], check=True)
 
     # add postprocessing functions
-    write_myFunctionsDict_multiparticle(myFunctionsDict_path, neighbour_ids)
+    write_myFunctionsDict(myFunctionsDict_path, neighbour_ids)
 
 
     if parallelise:
@@ -243,9 +242,22 @@ def solve_closure_multiparticle(case_dir, img_path, label_map_path, voxel, cbd_s
 
         from solveclosure.process_closure_results import process_closure_results
         print("Processing closure results.")
-        process_closure_results(case_dir, cbd_surf_por, sep_surf_por, dimensionless, L=L, write=True, multiparticle=True)  
+        process_closure_results(case_dir, cbd_surf_por, sep_surf_por, dimensionless, L=L, write=True)  
 
     end_time = time.time()
-    print("\nThe total run time was ", round(end_time - start_time, 1), " seconds.")      
+    print("\nThe total run time was ", round(end_time - start_time, 1), " seconds.")
 
 
+def solve_closure_multiparticle(*args, **kwargs):
+    """
+    Deprecated alias of :func:`solve_closure`.
+
+    .. deprecated:: 0.2.0
+        Use :func:`solveclosure.solve_closure` instead. This alias will be removed in a future release.
+    """
+    warnings.warn(
+        "solve_closure_multiparticle has been renamed to solve_closure and will be removed in a future release.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return solve_closure(*args, **kwargs)

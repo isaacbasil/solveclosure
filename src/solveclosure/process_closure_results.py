@@ -4,7 +4,7 @@ import subprocess
 from solveclosure.utility import load_openfoam_data
 
 
-def process_closure_results(case_dir, cbd_surf_por, sep_surf_por, dimensionless, L=None, write=True, multiparticle=True):
+def process_closure_results(case_dir, cbd_surf_por, sep_surf_por, dimensionless, L=None, write=True):
     """
     Processes the closure results from a solved OpenFOAM case, and writes them to the closure_data dictionary. 
     
@@ -15,7 +15,6 @@ def process_closure_results(case_dir, cbd_surf_por, sep_surf_por, dimensionless,
         dimensionless (bool): Whether the case is dimensionless or not.
         L (float): The lengthscale used (m) to non-dimensionalise the problem.
         write (bool): To set to False to vot write results to the closure_dict, but only print them.
-        multiparticle (bool): To set to True for a multiparticle case.
 
     Returns: 
         closure_data (dict): The dictionary containing the closure results and other image data.
@@ -34,12 +33,6 @@ def process_closure_results(case_dir, cbd_surf_por, sep_surf_por, dimensionless,
                     The (absolute) gradient of the surface average is {abs_grad} which is greater than 0.1. 
                     Increase the endTime value in system/controlDict and rerun the OpenFOAM solver.""")
 
-    if any([string in case_dir for string in ["multiparticle", "multi_particle", "with_interparticle_flux"]]) and not multiparticle:
-        response = input("\nMultiparticle is set to False, but this looks like a multiparticle case. Are you sure you want to conitune? (y/n)").strip().lower()
-        if response != "y":
-            print("Aborting.")
-            exit()
-                
     closure_data_dict_path = case_dir + "closure_data.pickle"
 
     # make a backup 
@@ -48,9 +41,8 @@ def process_closure_results(case_dir, cbd_surf_por, sep_surf_por, dimensionless,
     with open(closure_data_dict_path, 'rb') as closure_data_file:
         closure_data = pickle.load(closure_data_file)
 
-    if multiparticle:
-        offset = closure_data["T offset"]
-        closure_data["method"] = "multiparticle" 
+    offset = closure_data["T offset"]
+    closure_data["method"] = "multiparticle" # kept so existing results files and scripts that read this key still work
 
     t_initiated = False
 
@@ -64,10 +56,7 @@ def process_closure_results(case_dir, cbd_surf_por, sep_surf_por, dimensionless,
 
         for type in ["elec", "cbd", "sep"]:
 
-            if multiparticle:
-                s_surf_int_path = case_dir + f"/openfoam_case/postProcessing/particle_{key}/particle_{key}_surfaceIntegral_{type}/0/surfaceFieldValue.dat"
-            else:              
-                s_surf_int_path = case_dir + "particle_" + str(key) + f"/openfoam_case/postProcessing/surfaceIntegral_{type}/0/surfaceFieldValue.dat"
+            s_surf_int_path = case_dir + f"/openfoam_case/postProcessing/particle_{key}/particle_{key}_surfaceIntegral_{type}/0/surfaceFieldValue.dat"
 
             
             try:
@@ -97,10 +86,7 @@ def process_closure_results(case_dir, cbd_surf_por, sep_surf_por, dimensionless,
                 closure_data["particle data"][key]["s surf int transient"][t_idx] += surf_por[type] * s_surf_int_i[t_idx]
 
         # get volume integral to calculate volume average 
-        if multiparticle:
-            s_vol_int_path = case_dir + f"/openfoam_case/postProcessing/particle_{key}/particle_{key}_volumeIntegral/0/volFieldValue.dat"
-        else:              
-            s_vol_int_path = case_dir + f"particle_{key}/openfoam_case/postProcessing/volumeIntegral/0/volFieldValue.dat" 
+        s_vol_int_path = case_dir + f"/openfoam_case/postProcessing/particle_{key}/particle_{key}_volumeIntegral/0/volFieldValue.dat"
 
         try:
             t_vol, s_vol_int_i = load_openfoam_data(s_vol_int_path)
@@ -132,12 +118,11 @@ def process_closure_results(case_dir, cbd_surf_por, sep_surf_por, dimensionless,
 
     s_vol_ave_final = s_vol_ave_transient[-1]
 
-    # subtract offset for multiparticle method 
-    if multiparticle:
-        global_s_surf_ave_ss = global_s_surf_ave_ss - offset
-        global_s_surf_ave_transient = global_s_surf_ave_transient - offset
-        s_vol_ave_final = s_vol_ave_final - offset
-        s_vol_ave_transient = s_vol_ave_transient - offset
+    # subtract the T offset added to keep OpenFOAM's temperature positive
+    global_s_surf_ave_ss = global_s_surf_ave_ss - offset
+    global_s_surf_ave_transient = global_s_surf_ave_transient - offset
+    s_vol_ave_final = s_vol_ave_final - offset
+    s_vol_ave_transient = s_vol_ave_transient - offset
 
     # corrected surface average
     global_s_surf_ave_ss_corr = global_s_surf_ave_ss - s_vol_ave_final

@@ -1,6 +1,6 @@
-def write_fvOptions_file_multiparticle(file_path, particle_name, vol_source):
+def write_fvOptions_file(file_path, particle_name, vol_source):
     """
-    Writes the OpenFOAM BC file for a multiparticle case  
+    Writes the OpenFOAM fvOptions file (volumetric source term) for a particle  
     
     Args:
         file_path (str): The absolute path to the fvOptions file for the OpenFOAM case. 

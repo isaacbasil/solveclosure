@@ -93,21 +93,15 @@ For Option 1, this gives
 Solution of the PDEs
 --------------------
 
-Case Type
-~~~~~~~~~
+The Solver
+~~~~~~~~~~
 
-The closure problem can be solved in ``multiparticle`` or ``per particle``
-mode. In general, multiparticle mode is recommended – it is better
-maintained, uses a more robust solver, and allows for both options
-of the closure problem PDE. Per particle mode is mainly for very large
-cases. It exploits the form of the PDE in Option 2 to solve the closure
-problem for each particle independently, and thus scales very well with
-mesh size. Therefore, only Option 2 is supported for per particle cases. 
+The closure problem is solved for all particles together in a single
+OpenFOAM case, with each particle as its own region. Both options of the
+closure problem PDE are supported, selected with the ``allow_flux``
+argument.
 
-The Solvers
-~~~~~~~~~~~
-
-For multiparticle cases, we use OpenFOAM's ``chtMultiRegionFoam`` solver.
+We use OpenFOAM's ``chtMultiRegionFoam`` solver.
 Although originally designed for transient fluid flow and solid heat conduction,
 the PDEs for the latter take the same form as our closure problem.
 
@@ -117,9 +111,6 @@ and enforces that ``T`` cannot be negative. In our problem, no such constraint
 exists — the closure variable will generally be negative.
 Therefore, we use a ``T offset`` (a large constant added to initial condition,
 and subtracted in post-processing). 
-
-For a per-particle case, ``laplacianFoam`` is used, which does not require
-a ``T offset``.
 
 Template Directories
 ~~~~~~~~~~~~~~~~~~~~

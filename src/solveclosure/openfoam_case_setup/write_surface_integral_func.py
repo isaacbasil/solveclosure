@@ -1,6 +1,6 @@
 def write_surface_integral_func(file_path, particle_name, type):
     """
-    Writes the surface integral function for a multiparticle case.  
+    Writes the surface integral function.  
     
     Args:
         file_path (str): The absolute path to the surface integral function file. 

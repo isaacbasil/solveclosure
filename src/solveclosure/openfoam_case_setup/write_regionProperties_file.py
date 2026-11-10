@@ -1,6 +1,6 @@
 def write_regionProperties_file(file_path, particle_names):
     """
-    Writes the OpenFOAM regionProperties file for a multiparticle case.  
+    Writes the OpenFOAM regionProperties file.  
     
     Args:
         file_path (str): The absolute path to the regionProperties file for the OpenFOAM case. 

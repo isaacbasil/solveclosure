@@ -1,7 +1,7 @@
-def write_myFunctionsDict_multiparticle(file_path, neighbour_ids):
+def write_myFunctionsDict(file_path, neighbour_ids):
     """
     Writes the dictionary of functions to be included in system/controlDict. 
-    For multiparticle option, this includes all particles as well as elec, cbd, and sep 
+    This includes all particles as well as elec, cbd, and sep.
     
     Args:
         file_path (str): The absolute path to the myFunctionsDict file for the OpenFOAM case.  

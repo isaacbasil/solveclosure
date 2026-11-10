@@ -4,7 +4,7 @@ API reference
 The functions most users need are available directly from the top-level
 package:
 
-* :func:`solveclosure.solve_closure_multiparticle` builds and solves the
+* :func:`solveclosure.solve_closure` builds and solves the
   closure problem in OpenFOAM.
 * :func:`solveclosure.process_closure_results` processes the results of a
   solved case.

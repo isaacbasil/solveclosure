@@ -1,6 +1,6 @@
-def write_bc_file_multiparticle(file_path, particle_name, elec_source, cbd_source, neighbour_ids, T_offset, allow_flux=True):
+def write_bc_file(file_path, particle_name, elec_source, cbd_source, neighbour_ids, T_offset, allow_flux=True):
     """
-    Writes the OpenFOAM BC file for a multiparticle case  
+    Writes the OpenFOAM BC file for a particle  
     
     Args:
         file_path (str): The absolute path to the BC file (named T) for the OpenFOAM case. 

@@ -20,8 +20,8 @@ def check_and_write_area_and_volume_total(closure_data, entire_img, voxel, cbd_s
 
     area_am_elec, area_am_cbd, total_area, V_am = calculate_area_and_volume(entire_img, voxel, cbd_surface_porosity)
 
-    pp_total_area = 0 # per particle area sum 
-    pp_V_am = 0 # per particle volume sum 
+    pp_total_area = 0 # sum of individual particle areas
+    pp_V_am = 0 # sum of individual particle volumes
 
     for key, value in closure_data["particle data"].items():
         pp_total_area += value["particle surface area"]
