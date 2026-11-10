@@ -29,9 +29,9 @@ The simplest form of script to run solveclosure:
 import solveclosure
 
 img_path = "electrode_image.tif" # the path to your electrode image, electrolyte labelled as 0, active material 1, and CBD 2. 
-label_map_path = "label_map.tif" # to path to a label map of active material particles (beginning at 1).
+label_map_path = "label_map.tif" # the path to a label map of active material particles (beginning at 1).
 
-case_dir = "case_dir/" # am empty directory where OpenFOAM cases will be built. 
+case_dir = "case_dir/" # an empty directory where OpenFOAM cases will be built. 
 
 load_of_cmd = "source /usr/lib/openfoam/openfoam2412/etc/bashrc" # the command specific for your system to load an OpenFOAM terminal.
 
@@ -42,6 +42,15 @@ cbd_surface_porosity = 1.0 # the surface porosity of CBD. Set to 1 if CBD is not
 D_s = 4e-14 # the diffusivity of active material in m2.s-1.
 
 
-solveclosure.solve_closure_multiparticle(case_dir, img_path, label_map_path, load_of_cmd, voxel, cbd_surface_porosity, D_s)
+solveclosure.solve_closure_multiparticle(
+    case_dir,
+    img_path,
+    label_map_path,
+    voxel,
+    cbd_surface_porosity,
+    dimensionless=False, # solve the dimensional problem, using D_s
+    D_s=D_s,
+    load_of_cmd=load_of_cmd, # optional: if omitted, solveclosure searches for an OpenFOAM installation
+)
 
 ```

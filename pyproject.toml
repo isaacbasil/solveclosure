@@ -19,6 +19,7 @@ dependencies = [
     "matplotlib",
     "scikit-image",
     "scipy",
+    "imagecodecs",
 ]
 
 [tool.setuptools.package-data]
