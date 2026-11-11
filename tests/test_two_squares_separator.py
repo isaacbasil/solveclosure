@@ -124,16 +124,18 @@ def test_add_separator_layer_matches_relabelled_image(tmp_path):
     assert relabelled["global s surface average steady"] != pytest.approx(elec["global s surface average steady"], rel=1e-3)
 
 
-def test_lengthscale_is_saved_and_reused(tmp_path):
+def test_case_settings_are_saved_and_reused(tmp_path):
     img, label_map = load_two_squares()
     data = solve(tmp_path, "default_L", img, label_map, cbd_surf_por=0.5, dimensionless=True)
 
     assert data["L"] == pytest.approx(img.shape[0] * VOXEL)  # default: length of axis 0
     assert data["voxel"] == VOXEL
 
-    # reprocessing without passing L must use the saved value and give the same result
+    assert data["cbd surface porosity"] == 0.5 and data["sep surface porosity"] == 1.0
+
+    # reprocessing reads the saved settings and must give the same result
     case_dir = os.path.join(str(tmp_path), "default_L") + "/"
-    solveclosure.process_closure_results(case_dir, 0.5, 1.0, dimensionless=True)
+    solveclosure.process_closure_results(case_dir)
     with open(os.path.join(case_dir, "closure_data.pickle"), "rb") as f:
         reprocessed = pickle.load(f)
     assert reprocessed["global s surface average steady"] == pytest.approx(data["global s surface average steady"], rel=1e-12)

@@ -115,6 +115,8 @@ def solve_closure(case_dir, img_path, label_map_path, voxel, cbd_surf_por, sep_s
                     "dimensionless": dimensionless,
                     "L": L, # lengthscale (m) used to non-dimensionalise; None for a dimensional case
                     "voxel": voxel, # voxel side length (m)
+                    "cbd surface porosity": cbd_surf_por,
+                    "sep surface porosity": sep_surf_por,
                     }
 
     
@@ -246,7 +248,7 @@ def solve_closure(case_dir, img_path, label_map_path, voxel, cbd_surf_por, sep_s
 
         from solveclosure.process_closure_results import process_closure_results
         print("Processing closure results.")
-        process_closure_results(case_dir, cbd_surf_por, sep_surf_por, dimensionless, L=L, write=True)  
+        process_closure_results(case_dir, write=True)  
 
     end_time = time.time()
     print("\nThe total run time was ", round(end_time - start_time, 1), " seconds.")

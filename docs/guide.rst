@@ -189,6 +189,40 @@ variable under the keys:
 To look at the microscale fields. you can open the ``case.foam`` file within the OpenFOAM case using Paraview. 
 The closure variable field is called ``T``, since OpenFOAM is normally solving for temperature.
 
+Reprocessing results
+~~~~~~~~~~~~~~~~~~~~
+
+``solve_closure`` processes the results automatically. If you rerun the
+OpenFOAM solver yourself, process the results again with:
+
+.. code-block:: python
+
+   solveclosure.process_closure_results(case_dir)
+
+The settings of the case (``dimensionless``, ``L`` and the CBD and separator
+surface porosities) are read from ``closure_data.pickle``, so they always
+match the solved case. Cases set up with solveclosure 0.1.0 do not save these
+settings. To reprocess one of them, add the values that were used for the
+solve first:
+
+.. code-block:: python
+
+   import pickle
+
+   path = "case_dir/closure_data.pickle"
+   with open(path, "rb") as f:
+       closure_data = pickle.load(f)
+
+   closure_data.update({
+       "dimensionless": True,          # as used for the solve
+       "L": 1e-5,                      # lengthscale in m (None for a dimensional case)
+       "cbd surface porosity": 0.5,
+       "sep surface porosity": 1.0,
+   })
+
+   with open(path, "wb") as f:
+       pickle.dump(closure_data, f)
+
 Running on a High-Performance Computer (HPC)
 --------------------------------------------
 
