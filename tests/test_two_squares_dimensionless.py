@@ -39,4 +39,5 @@ def test_two_squares_dimensionless():
     subprocess.run(["bash", "-c", cmd], check=True)
 
     # check that value calculated agrees with validated results
-    assert np.round(s_surf_ave_steady_state, 6) == -0.055516
+    # steady state value; -0.055516 in solveclosure 0.1.0 came from a run that stopped before steady state
+    assert np.round(s_surf_ave_steady_state, 6) == -0.065954

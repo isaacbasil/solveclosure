@@ -1,6 +1,7 @@
 import numpy as np 
 import pickle
 import subprocess
+import warnings
 from solveclosure.utility import load_openfoam_data
 
 
@@ -18,19 +19,6 @@ def process_closure_results(case_dir, write=True):
     Returns: 
         closure_data (dict): The dictionary containing the closure results and other image data.
     """
-
-    def check_steady_state(t, s_surf, label):
-        # checks that OpenFOAM solver reached steady state
-        s1 = s_surf[-5]
-        t1 = t[-5]
-        s2 = s_surf[-1]
-        t2 = t[-1]
-        abs_grad = abs(s2 - s1) / (t2 - t1)
-
-        if abs_grad > 0.1:
-            print(f"""\n It appears that the closure problem for Particle {label} has not reached steady state:
-                    The (absolute) gradient of the surface average is {abs_grad} which is greater than 0.1. 
-                    Increase the endTime value in system/controlDict and rerun the OpenFOAM solver.""")
 
     closure_data_dict_path = case_dir + "closure_data.pickle"
 
@@ -79,8 +67,6 @@ def process_closure_results(case_dir, write=True):
                 print(f"\n Although a surface integral file existed for particle {key} with type {type} it is empty \n")
                 continue 
             
-            check_steady_state(t, s_surf_int_i, key)
-
             if not t_initiated:
                 global_sum_s_surf_int_transient = np.zeros(len(t))
                 global_sum_s_vol_int_transient = np.zeros(len(t))
@@ -138,6 +124,8 @@ def process_closure_results(case_dir, write=True):
     global_s_surf_ave_ss_corr = global_s_surf_ave_ss - s_vol_ave_final
     global_s_surf_ave_transient_corr = global_s_surf_ave_transient - s_vol_ave_transient
 
+    check_steady_state(closure_data["times for transient data"], global_s_surf_ave_transient_corr)
+
 
     print("\nThe global steady state surface average BEFORE correction is ", global_s_surf_ave_ss, "\n")
     print("\nThe global volume average at the final time is ", s_vol_ave_final, "\n")
@@ -152,15 +140,44 @@ def process_closure_results(case_dir, write=True):
     if write:
         with open(closure_data_dict_path, 'wb') as closure_data_file:
             pickle.dump(closure_data, closure_data_file)
-        print("the closure results were written to the closure data dictionary") 
+        print("the closure results were written to the closure data dictionary")
 
 
+def check_steady_state(t, s, window=0.5, rtol=1e-3):
+    """
+    Warns if the corrected global surface average has not reached steady state.
 
+    Takes the range (maximum minus minimum) of the surface average over the last part of the
+    simulation, relative to the largest magnitude reached during the run, so the check works in
+    both dimensional and dimensionless units. Using the range over a long window means that a run
+    stopped at the peak of the overshoot that the surface average shows early on is not mistaken
+    for a steady one.
 
-            
+    Args:
+        t (array): The times of the transient data.
+        s (array): The corrected global surface average at each time.
+        window (float): The fraction of the run, at its end, over which the range is measured. Default 0.5.
+        rtol (float): The largest acceptable relative range. Default 1e-3.
 
+    Returns:
+        relative_range (float): The range over the window, relative to the largest magnitude.
+    """
 
+    t = np.asarray(t, dtype=float)
+    s = np.asarray(s, dtype=float)
+    scale = np.max(np.abs(s))
+    if len(t) < 2 or scale == 0:
+        return 0.0
 
-  
+    t_start = t[-1] * (1 - window)
+    in_window = np.concatenate([[np.interp(t_start, t, s)], s[t > t_start]])
+    relative_range = (np.max(in_window) - np.min(in_window)) / scale
 
+    if relative_range > rtol:
+        warnings.warn(
+            f"The closure problem has not reached steady state: the global surface average varied by "
+            f"{relative_range:.2%} over the last {window:.0%} of the simulation (limit {rtol:.2%}). "
+            f"Run solve_closure again with a larger end_time or max_end_time, for example twice the current value of {t[-1]:g}.",
+            UserWarning, stacklevel=2)
 
+    return relative_range

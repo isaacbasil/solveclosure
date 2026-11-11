@@ -1,20 +1,20 @@
-def write_controlDict_file(file_path, dimensionless, time_params):
+def write_controlDict_file(file_path, dimensionless, end_time, write_interval, start_from="startTime"):
     """
-    Writes the OpenFOAM controlDict file. Final time and t step will be different depending on whether dimensionless is True or False.  
+    Writes the OpenFOAM controlDict file.
     
     Args:
-        file_path (str): The absolute path to the p file for the OpenFOAM case. 
-        dimensionless (bool): Whether the case is dimensionless or not.
-        time_params (dict): A dictionary specifying time parameters. If None, default values will be used.
+        file_path (str): The absolute path to the controlDict file for the OpenFOAM case.
+        dimensionless (bool): Whether the case is dimensionless or not. Sets the initial time step.
+        end_time (float): The simulation end time (dimensionless, or in seconds for a dimensional case).
+        write_interval (float): The interval at which the 3D fields are written.
+        start_from (str): "startTime" to start from time 0, or "latestTime" to continue from the latest saved time. Default "startTime".
 
     Returns:
     """
-    
-    if time_params is None:
-        if dimensionless:
-            time_params = {"T_end": 0.0056, "dt": 1e-8, "write_interval": 0.0014}
-        else:
-            time_params = {"T_end": 800.0, "dt": 1e-3, "write_interval": 200}
+
+    # initial time step; the solver then adjusts it (adjustTimeStep, maxDi)
+    dt = 1e-8 if dimensionless else 1e-3
+    dt = min(dt, end_time / 1000)
 
     content = f"""
 FoamFile
@@ -29,19 +29,19 @@ FoamFile
 
 application     chtMultiRegionFoam;
 
-startFrom       startTime;
+startFrom       {start_from};
 
 startTime       0;
 
 stopAt          endTime;
 
-endTime         {time_params["T_end"]};
+endTime         {end_time};
 
-deltaT          {time_params["dt"]};
+deltaT          {dt};
 
 writeControl    adjustableRunTime;
 
-writeInterval   {time_params["write_interval"]};
+writeInterval   {write_interval};
 
 purgeWrite      0;
 

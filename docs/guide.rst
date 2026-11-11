@@ -168,6 +168,53 @@ exists — the closure variable will generally be negative.
 Therefore, we use a ``T offset`` (a large constant added to initial condition,
 and subtracted in post-processing). 
 
+Simulation Time
+~~~~~~~~~~~~~~~
+
+The closure problem is transient, and the result is taken at steady state, so
+the solver must run long enough to reach it. The end time is set with the
+``end_time`` argument of ``solve_closure``. By default it is
+
+- :math:`\hat{t} = 0.25` for a dimensionless case, and
+- :math:`t = (\textrm{image length along axis 0})^{2}/(4D_{k})` for a
+  dimensional case, which is the same physical time when :math:`L` is the
+  image length.
+
+This is enough for many cases. Larger connected networks of particles take
+longer to settle (up to about :math:`\hat{t} = 1` for a network spanning the
+whole image), and these are continued automatically, as described below.
+
+After the solver finishes, solveclosure checks that the global surface
+average has reached steady state: it must vary by less than 0.1% (maximum
+minus minimum) over the last half of the simulation. The surface average
+overshoots its steady value early in the simulation, and checking over the
+last half of the run stops a run near that peak from being mistaken for a
+steady one.
+
+If steady state has not been reached, the solver is continued from where it
+stopped, with the end time doubled, and the check is repeated. The time
+stepping is unchanged, so the transient results are the same as for one
+continuous run. This repeats until steady state is reached or the end time
+would exceed ``max_end_time`` (default ``16 * end_time``, which allows up to
+four continuations); in that case a warning is shown. To stop at ``end_time``
+regardless, set ``continue_to_steady_state=False``; a warning is still shown
+if steady state was not reached. The end time that was
+reached and the number of continuations are saved in ``closure_data.pickle``
+under ``end time`` and ``continuations``.
+
+When the solver is continued, OpenFOAM writes the surface and volume
+integrals of the continuation to a new folder in ``postProcessing``, named
+after the time it was continued from. solveclosure merges these back into the
+files of the ``0`` folder, so the output looks like that of one continuous
+simulation. If you continue a simulation yourself, do the same with
+``solveclosure.utility.merge_postprocessing_time_folders`` before running
+``process_closure_results``.
+
+The ``write_interval`` argument sets how often the 3D fields are written, for
+viewing in ParaView (default ``end_time / 4``, updated when the solver is
+continued). It does not affect the results, because the surface and volume
+integrals are recorded at every time step.
+
 Template Directories
 ~~~~~~~~~~~~~~~~~~~~
 
