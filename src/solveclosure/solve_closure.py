@@ -5,7 +5,7 @@ import pickle
 import time 
 import warnings
 
-from solveclosure.utility import add_slash, check_for_existing_solutions, find_latest_openfoam_installation
+from solveclosure.utility import add_slash, check_for_existing_solutions, find_latest_openfoam_installation, check_image_labels
 from solveclosure.image_analysis import calculate_source_terms_dimensional, calculate_source_terms_dimensionless, check_and_write_area_and_volume_total, return_x_positions, subdivide_image_using_label_map
 from solveclosure.openfoam_case_setup import make_blockMeshDict, make_topoSetDict, write_bc_file, write_fvOptions_file, write_myFunctionsDict, write_p_file, write_regionProperties_file, write_surface_integral_func, write_volume_integral_func, write_thermophysicalProperties_file, write_decomposeParDict_file, write_controlDict_file
 
@@ -19,11 +19,11 @@ def solve_closure(case_dir, img_path, label_map_path, voxel, cbd_surf_por, sep_s
 
     Args:
         case_dir (str): The path to an empty directory where the OpenFOAM case will be built.
-        img_path (str): The path to the image of the electrode micrstructure in tif format. Electrolyte labelled 0, AM as 1, and CBD as 2.
+        img_path (str): The path to the image of the electrode microstructure in tif format. Electrolyte labelled 0, AM as 1, CBD as 2 and separator as 3. Voxels labelled 51 (inactive material) are treated as electrolyte.
         label_map_path (str): The path to the label map which identifies particle IDs. Same dimensions as the image. 
         voxel (float): The voxel side length of the image in meters. 
         cbd_surf_por (float): The surface porosity of the CBD phase. 
-        sep_surf_por (float, optional): To model the reduced reaction rate caused by particles in contact with a separator, set the separator surface porosity.
+        sep_surf_por (float, optional): The surface porosity of the separator, applied where AM touches separator voxels (label 3). Default 1.0.
         dimensionless (bool): Set to False to solve a dimensional case. Default is True. 
         D_s (float): The diffusivity of the AM in m2.s-1. Required if solving a dimensional case.
         L (float): The lengthscale used (m) to non-dimensionalise the problem. If None, but dimensionless=True, the length of axis 0 of the image will be used.
@@ -86,6 +86,7 @@ def solve_closure(case_dir, img_path, label_map_path, voxel, cbd_surf_por, sep_s
     print("Analysing image.")
     img = tif.imread(img_path)
     label_map = tif.imread(label_map_path)
+    check_image_labels(img, label_map)
 
     if dimensionless and L is None:
         print("\nLengthscale not provided for dimensionless case. Setting to length of the image's axis 0 by default.")
@@ -108,9 +109,12 @@ def solve_closure(case_dir, img_path, label_map_path, voxel, cbd_surf_por, sep_s
                     "total area (surface porosity included)": None, 
                     "am-elec area": None,
                     "am-cbd area (surface porosity omitted)": None,
+                    "am-sep area (surface porosity omitted)": None,
                     "total particle volume": None,
                     "T offset": T_offset,
                     "dimensionless": dimensionless,
+                    "L": L, # lengthscale (m) used to non-dimensionalise; None for a dimensional case
+                    "voxel": voxel, # voxel side length (m)
                     }
 
     
@@ -142,8 +146,8 @@ def solve_closure(case_dir, img_path, label_map_path, voxel, cbd_surf_por, sep_s
     cmd = f"{load_of_cmd} && splitMeshRegions -case {of_case_dir} -cellZonesOnly -overwrite > {of_case_dir}log.splitMeshRegions 2>&1"
     subprocess.run(["bash", "-c", cmd], check=True)
 
-    # get rid of Elec and CBD dirs
-    cmd = f"cd {of_case_dir} && rm -rf 0/Elec constant/Elec system/Elec 0/CBD constant/CBD system/CBD"
+    # get rid of Elec, CBD and Sep dirs
+    cmd = f"cd {of_case_dir} && rm -rf 0/Elec constant/Elec system/Elec 0/CBD constant/CBD system/CBD 0/Sep constant/Sep system/Sep"
     subprocess.run(["bash", "-c", cmd], check=False)
 
     # write regionProperties file
@@ -159,16 +163,16 @@ def solve_closure(case_dir, img_path, label_map_path, voxel, cbd_surf_por, sep_s
 
         # write correct source terms to OF files 
         if dimensionless:
-            S_vol, bc_source_elec, bc_source_cbd, total_particle_area, V_am = calculate_source_terms_dimensionless(subsection, voxel, cbd_surf_por, L)
+            S_vol, bc_source_elec, bc_source_cbd, bc_source_sep, total_particle_area, V_am = calculate_source_terms_dimensionless(subsection, voxel, cbd_surf_por, sep_surf_por, L)
         else:
-            S_vol, bc_source_elec, bc_source_cbd, total_particle_area, V_am = calculate_source_terms_dimensional(subsection, voxel, cbd_surf_por, D_s)
+            S_vol, bc_source_elec, bc_source_cbd, bc_source_sep, total_particle_area, V_am = calculate_source_terms_dimensional(subsection, voxel, cbd_surf_por, sep_surf_por, D_s)
 
         closure_data["particle data"][key] = {"particle surface area": total_particle_area, "particle volume": V_am, "centre x position": x_positions_m[key - 1]}
 
         # === files that are edited here (except p) and not be the user ===
 
         bc_path = of_case_dir + f"0/particle_{key}/T"
-        write_bc_file(bc_path, particle_name, bc_source_elec, bc_source_cbd, neighbour_ids, T_offset, allow_flux=allow_flux)
+        write_bc_file(bc_path, particle_name, bc_source_elec, bc_source_cbd, bc_source_sep, neighbour_ids, T_offset, allow_flux=allow_flux)
 
         p_path = of_case_dir + f"/0/particle_{key}/p"
         write_p_file(p_path, particle_name)
@@ -217,7 +221,7 @@ def solve_closure(case_dir, img_path, label_map_path, voxel, cbd_surf_por, sep_s
 
 
     # check area and volume, and add it to the closure data dictionary
-    closure_data = check_and_write_area_and_volume_total(closure_data, img, voxel, cbd_surf_por)
+    closure_data = check_and_write_area_and_volume_total(closure_data, img, voxel, cbd_surf_por, sep_surf_por)
 
 
     # ======= write particle_data file =========

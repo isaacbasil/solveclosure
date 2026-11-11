@@ -1,25 +1,28 @@
 import numpy as np
 
-def calculate_area_and_volume(img, voxel, cbd_surface_porosity):
+def calculate_area_and_volume(img, voxel, cbd_surface_porosity, sep_surface_porosity):
     # calculates surface area and active material volume
     """
-    Calculates the source terms for the DIMENSIONAL closure problem PDE.
+    Calculates the AM surface areas and the AM volume of an image.
     
     Args:
-        img (nd array): The electrode image.
+        img (nd array): The electrode image. Electrolyte 0, AM 1, CBD 2, separator 3.
         voxel (float): The voxel size in meters.
         cbd_surface_porosity (float): The CBD surface porosity.
+        sep_surface_porosity (float): The separator surface porosity.
 
     Returns: 
         area_am_elec (float): The total area of the AM-elec boundary (m2).
         area_am_cbd (float): The total area of the AM-CBD boundary (m2).
-        total_area (float): The total surface area (with surface porosity of CBD accounted for).
+        area_am_sep (float): The total area of the AM-separator boundary (m2).
+        total_area (float): The total surface area (with the surface porosities of CBD and separator accounted for).
         V_am (float): The total volume of the AM. 
     """
 
     nx, ny, nz = img.shape
     count_am_cbd = 0
     count_am_elec = 0
+    count_am_sep = 0
 
     # calculate surface areas 
     for i in range(nx):
@@ -32,6 +35,8 @@ def calculate_area_and_volume(img, voxel, cbd_surface_porosity):
                         count_am_elec += 1
                     if (img[i, j, k] == 1 and img[i + 1, j, k] == 2) or (img[i, j, k] == 2 and img[i + 1, j, k] == 1):
                         count_am_cbd += 1
+                    if (img[i, j, k] == 1 and img[i + 1, j, k] == 3) or (img[i, j, k] == 3 and img[i + 1, j, k] == 1):
+                        count_am_sep += 1
 
                 # check right neighbour
                 if j + 1 < ny:
@@ -39,6 +44,8 @@ def calculate_area_and_volume(img, voxel, cbd_surface_porosity):
                         count_am_elec += 1
                     if (img[i, j, k] == 1 and img[i, j + 1, k] == 2) or (img[i, j, k] == 2 and img[i, j + 1, k] == 1):
                         count_am_cbd += 1
+                    if (img[i, j, k] == 1 and img[i, j + 1, k] == 3) or (img[i, j, k] == 3 and img[i, j + 1, k] == 1):
+                        count_am_sep += 1
 
                 # check upper neighbour
                 if k + 1 < nz:
@@ -46,15 +53,18 @@ def calculate_area_and_volume(img, voxel, cbd_surface_porosity):
                         count_am_elec += 1
                     if (img[i, j, k] == 1 and img[i, j, k + 1] == 2) or (img[i, j, k] == 2 and img[i, j, k + 1] == 1):
                         count_am_cbd += 1
+                    if (img[i, j, k] == 1 and img[i, j, k + 1] == 3) or (img[i, j, k] == 3 and img[i, j, k + 1] == 1):
+                        count_am_sep += 1
 
 
     # assuming each interface is square, and that they are all the same size
     face_area = voxel ** 2
     area_am_elec = face_area * count_am_elec
     area_am_cbd = face_area * count_am_cbd
+    area_am_sep = face_area * count_am_sep
                 
-    total_area = area_am_elec + area_am_cbd * cbd_surface_porosity
+    total_area = area_am_elec + area_am_cbd * cbd_surface_porosity + area_am_sep * sep_surface_porosity
     voxel_vol = voxel ** 3
     V_am = np.sum(img[img == 1]) * voxel_vol
 
-    return area_am_elec, area_am_cbd, total_area, V_am
+    return area_am_elec, area_am_cbd, area_am_sep, total_area, V_am

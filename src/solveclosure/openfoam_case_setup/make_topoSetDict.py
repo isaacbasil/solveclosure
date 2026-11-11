@@ -81,6 +81,7 @@ FoamFile
 
     elec_id_list = [] 
     cbd_id_list = [] 
+    sep_id_list = []
 
 
     cell_action = "new" 
@@ -95,6 +96,8 @@ FoamFile
                     elec_id_list.append(cell_id)
                 elif phase_id == 2:
                     cbd_id_list.append(cell_id)
+                elif phase_id == 3:
+                    sep_id_list.append(cell_id)
                 else:
                     raise ValueError("Unknown phase id in image: " + str(phase_id))
     
@@ -107,6 +110,8 @@ FoamFile
         topo_content = add_topo_labelToCell(topo_content, elec_id_list, "c_elec")
     if cbd_id_list:
         topo_content = add_topo_labelToCell(topo_content, cbd_id_list, "c_cbd")
+    if sep_id_list:
+        topo_content = add_topo_labelToCell(topo_content, sep_id_list, "c_sep")
 
     
     
@@ -120,6 +125,8 @@ FoamFile
         topo_content = add_region(topo_content, "Elec", "c_elec")
     if cbd_id_list:
         topo_content = add_region(topo_content, "CBD", "c_cbd")
+    if sep_id_list:
+        topo_content = add_region(topo_content, "Sep", "c_sep")
         
     
     # close actions and add openFOAM footer

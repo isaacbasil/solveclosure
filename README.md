@@ -28,7 +28,7 @@ The simplest form of script to run solveclosure:
 ```python
 import solveclosure
 
-img_path = "electrode_image.tif" # the path to your electrode image, electrolyte labelled as 0, active material 1, and CBD 2. 
+img_path = "electrode_image.tif" # the path to your electrode image, electrolyte labelled as 0, active material 1, CBD 2, and separator 3 (optional). 
 label_map_path = "label_map.tif" # the path to a label map of active material particles (beginning at 1).
 
 case_dir = "case_dir/" # an empty directory where OpenFOAM cases will be built. 

@@ -53,9 +53,9 @@ def subdivide_image_using_label_map(label_map_path, entire_img, show_subsections
     def recognise_other_am_particles(subsection, subsection_labels, particle_id):
         # this function relabels other AM particles in the image subsection, so that AM-AM boundaries can be recognised later. 
         # it also returns the IDs of neighbouring particles
-        # the label chosen for other particles is 3 
+        # the label chosen for other particles is 4 (3 is the separator)
         
-        # ids to relabel to 3
+        # ids to relabel to 4
         relabel_ids = (subsection_labels != particle_id) & (subsection == 1)
 
         # gettings IDs of neighbouring particles
@@ -70,15 +70,16 @@ def subdivide_image_using_label_map(label_map_path, entire_img, show_subsections
             if np.any(primary_particle_mask & other_particle_mask_dilated):
                 neighbour_ids.append(other_id)
 
-        # check if particle touches elec or cbd
+        # check if particle touches elec, cbd or the separator
         dilated_masks = {"elec": binary_dilation(np.copy(subsection) == 0),
-                         "cbd": binary_dilation(np.copy(subsection) == 2),}
+                         "cbd": binary_dilation(np.copy(subsection) == 2),
+                         "sep": binary_dilation(np.copy(subsection) == 3),}
         for key, mask in dilated_masks.items():
             if np.any(primary_particle_mask & mask):
                 neighbour_ids.append(key)
 
-        # tag other particles as 3 
-        subsection[relabel_ids] = 3
+        # tag other particles as 4 
+        subsection[relabel_ids] = 4
 
         return subsection, neighbour_ids
     

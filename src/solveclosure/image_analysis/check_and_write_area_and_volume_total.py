@@ -1,6 +1,6 @@
 from solveclosure.image_analysis.calculate_area_and_volume import calculate_area_and_volume
 
-def check_and_write_area_and_volume_total(closure_data, entire_img, voxel, cbd_surface_porosity):
+def check_and_write_area_and_volume_total(closure_data, entire_img, voxel, cbd_surface_porosity, sep_surface_porosity):
 
     """
     Checks that the sum of area and volume from the particles matches the total image.
@@ -10,6 +10,8 @@ def check_and_write_area_and_volume_total(closure_data, entire_img, voxel, cbd_s
         closure_data (dict): The closure data dictionary.
         entire_img (nd array): The electrode image.
         voxel (float): The voxel size in meters.
+        cbd_surface_porosity (float): The CBD surface porosity.
+        sep_surface_porosity (float): The separator surface porosity.
 
     Returns: 
         closure_data (dict): The updated closure data dictionary
@@ -18,7 +20,7 @@ def check_and_write_area_and_volume_total(closure_data, entire_img, voxel, cbd_s
     if entire_img.dtype == bool:
         entire_img = entire_img.astype(int)
 
-    area_am_elec, area_am_cbd, total_area, V_am = calculate_area_and_volume(entire_img, voxel, cbd_surface_porosity)
+    area_am_elec, area_am_cbd, area_am_sep, total_area, V_am = calculate_area_and_volume(entire_img, voxel, cbd_surface_porosity, sep_surface_porosity)
 
     pp_total_area = 0 # sum of individual particle areas
     pp_V_am = 0 # sum of individual particle volumes
@@ -36,6 +38,7 @@ def check_and_write_area_and_volume_total(closure_data, entire_img, voxel, cbd_s
     closure_data["total area (surface porosity included)"] = total_area
     closure_data["am-elec area"] = area_am_elec
     closure_data["am-cbd area (surface porosity omitted)"] = area_am_cbd
+    closure_data["am-sep area (surface porosity omitted)"] = area_am_sep
     closure_data["total particle volume"] = V_am
     
     return closure_data

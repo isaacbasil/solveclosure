@@ -13,8 +13,8 @@ def process_closure_results(case_dir, cbd_surf_por, sep_surf_por, dimensionless,
         cbd_surf_por (float): The CBD surface porosity.
         sep_surf_por (float): The separator surface porosity.
         dimensionless (bool): Whether the case is dimensionless or not.
-        L (float): The lengthscale used (m) to non-dimensionalise the problem.
-        write (bool): To set to False to vot write results to the closure_dict, but only print them.
+        L (float, optional): The lengthscale used (m) to non-dimensionalise the problem. If None, the value saved in closure_data.pickle by solve_closure is used.
+        write (bool): Set to False to not write results to the closure_dict, but only print them.
 
     Returns: 
         closure_data (dict): The dictionary containing the closure results and other image data.
@@ -42,6 +42,11 @@ def process_closure_results(case_dir, cbd_surf_por, sep_surf_por, dimensionless,
         closure_data = pickle.load(closure_data_file)
 
     offset = closure_data["T offset"]
+
+    if dimensionless and L is None:
+        L = closure_data.get("L")
+        if L is None:
+            raise ValueError("L must be provided for a dimensionless case: it is not saved in this closure_data.pickle (cases set up before solveclosure 0.2.0 do not save it).")
     closure_data["method"] = "multiparticle" # kept so existing results files and scripts that read this key still work
 
     t_initiated = False

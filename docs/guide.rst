@@ -19,13 +19,61 @@ The user must have:
    Subsystem for Linux (WSL). The package may work on Mac, but it has
    not been tested. 
 2. An OpenFOAM installation. 
-3. A TIF image of their electrode structure. Three phases are allowed
-   – electrolyte as label 0, active material (AM) labelled 1, and carbon-binder
-   domain (CBD) labelled 2. 
+3. A TIF image of their electrode structure, using the labels below.
+
+===== =====================================================
+Label Phase
+===== =====================================================
+0     Electrolyte
+1     Active material (AM)
+2     Carbon-binder domain (CBD)
+3     Separator (optional, see `Separators`_)
+51    Inactive material, treated as electrolyte
+===== =====================================================
 
 A label map identifying the different AM particles within the electrode
 image is also recommended. However, a function is provided with the
 package to generate this if needed.
+
+Separators
+----------
+
+Where active material touches the separator, the reaction is reduced by the
+separator surface porosity, :math:`\varepsilon_{\mathrm{sep}}^{\mathrm{surf}}`,
+set with the ``sep_surf_por`` argument (default 1, meaning no reduction).
+Mark the separator by labelling its voxels 3. Only the boundary between AM and
+separator voxels matters, so a separator layer one voxel thick is enough.
+As for the CBD, the AM-separator area, weighted by the surface porosity, is
+included in the particle surface area :math:`A_{i}` of the volumetric source
+term. Faces of the image that are not labelled are treated as walls with no
+flux.
+
+If your image does not include the separator, ``add_separator_layer`` adds a
+layer of separator voxels to one face of the image and pads the label map to
+match:
+
+.. code-block:: python
+
+   import tifffile
+   import solveclosure
+
+   img = tifffile.imread("electrode_image.tif")
+   label_map = tifffile.imread("label_map.tif")
+
+   img, label_map = solveclosure.add_separator_layer(img, label_map, axis=0, side="start")
+
+   tifffile.imwrite("electrode_image_with_separator.tif", img)
+   tifffile.imwrite("label_map_with_separator.tif", label_map)
+
+Padding makes the image larger. In a dimensionless case, the default
+lengthscale ``L`` is the length of axis 0 of the image, so it includes the
+separator layer; pass ``L`` explicitly if you want a different value. The
+lengthscale used is saved in the results under ``L``. Adding the layer at the
+start of axis 0 also shifts the particle centre x positions stored in the
+results by the thickness of the layer.
+
+See ``examples/two_squares/solve_closure_separator_example.py`` for a complete
+example.
 
 The PDEs
 --------
@@ -45,6 +93,7 @@ which is the default,
    \partial_{t}s_{i}^{t} & =D_{k}\Delta s_{i}^{t}+\frac{1}{F}\frac{A_{i}}{V_{k_{i}}} & \textrm{in }\Omega_{k_{i}},\\
    -\boldsymbol{n}\cdot D_{k}\nabla s_{i}^{t} & =\frac{1}{F} & \textrm{at }\partial\Omega_{k_{i},e},\\
    \boldsymbol{n}\cdot\nabla s_{i}^{t} & =-\varepsilon_{\mathrm{cbd}}^{\mathrm{surf}}\frac{1}{FD_{k}} & \textrm{at }\partial\Omega_{k_{i},\mathrm{cbd}},\\
+   \boldsymbol{n}\cdot\nabla s_{i}^{t} & =-\varepsilon_{\mathrm{sep}}^{\mathrm{surf}}\frac{1}{FD_{k}} & \textrm{at }\partial\Omega_{k_{i},\mathrm{sep}},\\
    \boldsymbol{n}\cdot\nabla s_{i}^{t} & =\boldsymbol{n}\cdot\nabla s_{j}^{t} & \textrm{at }\partial\Omega_{k_{i},k_{j}},\\
    s_{i}^{t} & =s_{j}^{t} & \textrm{at }\partial\Omega_{k_{i},k_{j}},\\
    s_{i}^{t} & =0 & \textrm{at }t=0.
@@ -61,6 +110,7 @@ This PDE is solved if the ``allow_flux`` argument is set to ``False``.
    \partial_{t}s_{i}^{t} & =D_{k}\Delta s_{i}^{t}+\frac{1}{F}\frac{A_{i}}{V_{k_{i}}} & \textrm{in }\Omega_{k_{i}},\\
    -\boldsymbol{n}\cdot D_{k}\nabla s_{i}^{t} & =\frac{1}{F} & \textrm{at }\partial\Omega_{k_{i},e},\\
    \boldsymbol{n}\cdot\nabla s_{i}^{t} & =-\varepsilon_{\mathrm{cbd}}^{\mathrm{surf}}\frac{1}{FD_{k}} & \textrm{at }\partial\Omega_{k_{i},\mathrm{cbd}},\\
+   \boldsymbol{n}\cdot\nabla s_{i}^{t} & =-\varepsilon_{\mathrm{sep}}^{\mathrm{surf}}\frac{1}{FD_{k}} & \textrm{at }\partial\Omega_{k_{i},\mathrm{sep}},\\
    \boldsymbol{n}\cdot\nabla s_{i}^{t} & =0 & \textrm{at }\partial\Omega_{k_{i},k_{j}},\\
    s_{i}^{t} & =0 & \textrm{at }t=0.
    \end{aligned}
@@ -88,6 +138,7 @@ For Option 1, this gives
    \partial_{\hat{t}}\hat{s}_{i}^{t} & =\hat{\Delta}\hat{s}_{i}^{t}+\frac{LA_{i}}{V_{k_{i}}} & \textrm{in }\Omega_{k_{i}},\\
    \boldsymbol{n}\cdot\hat{\nabla}\hat{s}_{i}^{t} & =-1 & \textrm{at }\partial\Omega_{k_{i},e},\\
    \boldsymbol{n}\cdot\hat{\nabla}\hat{s}_{i}^{t} & =-\varepsilon_{\mathrm{cbd}}^{\mathrm{surf}} & \textrm{at }\partial\Omega_{k_{i},\mathrm{cbd}},\\
+   \boldsymbol{n}\cdot\hat{\nabla}\hat{s}_{i}^{t} & =-\varepsilon_{\mathrm{sep}}^{\mathrm{surf}} & \textrm{at }\partial\Omega_{k_{i},\mathrm{sep}},\\
    \boldsymbol{n}\cdot\hat{\nabla}\hat{s}_{i}^{t} & =\boldsymbol{n}\cdot\hat{\nabla}\hat{s}_{j}^{t} & \textrm{at }\partial\Omega_{k_{i},k_{j}},\\
    \hat{s}_{i}^{t} & =\hat{s}_{j}^{t} & \textrm{at }\partial\Omega_{k_{i},k_{j}},\\
    \hat{s}_{i}^{t} & =0 & \textrm{at }\hat{t}=0.

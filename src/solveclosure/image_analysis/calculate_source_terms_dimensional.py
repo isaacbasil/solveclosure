@@ -1,7 +1,7 @@
 from solveclosure.image_analysis.calculate_area_and_volume import calculate_area_and_volume
 import numpy as np
 
-def calculate_source_terms_dimensional(img, voxel, cbd_surface_porosity, D_s):
+def calculate_source_terms_dimensional(img, voxel, cbd_surface_porosity, sep_surface_porosity, D_s):
     """
     Calculates the source terms for the DIMENSIONAL closure problem PDE.
     
@@ -9,17 +9,19 @@ def calculate_source_terms_dimensional(img, voxel, cbd_surface_porosity, D_s):
         img (nd array): The electrode image.
         voxel (float): The voxel size in meters.
         cbd_surface_porosity (float): The CBD surface porosity.
+        sep_surface_porosity (float): The separator surface porosity.
         D_s (float): The diffusivity of the AM in m2.s-1.
 
     Returns: 
         dimensional_S_vol (float): The volume source term.
         dimensional_bc_elec (float): The AM-elec boundary source term.  
-        dimensional_bc_cbd (float): The AM-CBD boundary source term.  
-        total_area (float): The total surface area (with surface porosity of CBD accounted for).
+        dimensional_bc_cbd (float): The AM-CBD boundary source term. False if the subsection has no AM-CBD boundary.
+        dimensional_bc_sep (float): The AM-separator boundary source term. False if the subsection has no AM-separator boundary.
+        total_area (float): The total surface area (with the surface porosities of CBD and separator accounted for).
         V_am (float): The total volume of the AM. 
     """
 
-    area_am_elec, area_am_cbd, total_area, V_am = calculate_area_and_volume(img, voxel, cbd_surface_porosity)
+    area_am_elec, area_am_cbd, area_am_sep, total_area, V_am = calculate_area_and_volume(img, voxel, cbd_surface_porosity, sep_surface_porosity)
     
     F = 96485
     dimensional_S_vol = 1 / F * total_area / V_am 
@@ -31,7 +33,12 @@ def calculate_source_terms_dimensional(img, voxel, cbd_surface_porosity, D_s):
     else:
         dimensional_bc_cbd = False
 
-    if any([np.isnan(val) for val in [dimensional_S_vol, dimensional_bc_elec, dimensional_bc_cbd]]):
+    if area_am_sep != 0:
+        dimensional_bc_sep = sep_surface_porosity * - 1 / (D_s *F)
+    else:
+        dimensional_bc_sep = False
+
+    if any([np.isnan(val) for val in [dimensional_S_vol, dimensional_bc_elec, dimensional_bc_cbd, dimensional_bc_sep]]):
         raise ValueError("One of the source terms is NaN!")
     
-    return dimensional_S_vol, dimensional_bc_elec, dimensional_bc_cbd, total_area, V_am
+    return dimensional_S_vol, dimensional_bc_elec, dimensional_bc_cbd, dimensional_bc_sep, total_area, V_am

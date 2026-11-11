@@ -1,4 +1,4 @@
-def write_bc_file(file_path, particle_name, elec_source, cbd_source, neighbour_ids, T_offset, allow_flux=True):
+def write_bc_file(file_path, particle_name, elec_source, cbd_source, sep_source, neighbour_ids, T_offset, allow_flux=True):
     """
     Writes the OpenFOAM BC file for a particle  
     
@@ -6,7 +6,8 @@ def write_bc_file(file_path, particle_name, elec_source, cbd_source, neighbour_i
         file_path (str): The absolute path to the BC file (named T) for the OpenFOAM case. 
         particle_name (str): The name of the particle in format particle_i.
         elec_source (float): The source term at the AM-elec boundary.  
-        cbd_source (float): The source term at the AM-CBD boundary.   
+        cbd_source (float): The source term at the AM-CBD boundary. False if there is no AM-CBD boundary.
+        sep_source (float): The source term at the AM-separator boundary. False if there is no AM-separator boundary.
         neighbour_ids (list): The IDs of particles which share a boundary with particle i.
         T_offset (float): A large number to prevent the OpenFOAM solver from encountering negative 'temperatures'.  
         allow_flux(bool): True for Option 1, False for Option 2 (see documentation).
@@ -58,6 +59,15 @@ boundaryField
     {{
         type            fixedGradient;
         gradient        uniform {cbd_source};
+    }}
+"""
+
+    if sep_source is not False: # sep_source = 0.0 (surface porosity 0) is valid, so compare with False explicitly
+        content += f"""
+    {particle_name}_to_Sep
+    {{
+        type            fixedGradient;
+        gradient        uniform {sep_source};
     }}
 """
 
