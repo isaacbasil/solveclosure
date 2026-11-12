@@ -75,6 +75,41 @@ results by the thickness of the layer.
 See ``examples/two_squares/solve_closure_separator_example.py`` for a complete
 example.
 
+Generating a Label Map
+----------------------
+
+``generate_label_map`` creates a label map from an electrode image, giving
+each active material particle its own ID (starting at 1):
+
+.. code-block:: python
+
+   solveclosure.generate_label_map("electrode_image.tif", "label_map.tif")
+
+It separates touching particles with a watershed on the distance map of the
+active material, starting from one marker per peak of the distance map. By
+default (``maxima_algorithm="h_maxima"``), only peaks that stand at least
+``h = 0.75`` voxels above the lowest point between them and a higher peak are
+used, so flat tops and small bumps of the distance map do not create extra
+particles. Decrease ``h`` if particles are merged, and increase it if particles
+are split. The methods of solveclosure 0.1.0 are available as
+``maxima_algorithm="local_maxima"`` and ``"peak_local_max"``. 2D and 3D images
+are supported.
+
+Next to the label map, two images are saved for checking the result:
+
+- ``<name>_slices.png`` (``save_image=True``): four slices of the label map,
+  evenly spaced along x (axis 0), or the whole label map for a 2D image. For a
+  3D image with fewer than 4 voxels along x, a warning is shown instead.
+- ``<name>_stats.png`` (``save_stats=True``): the number of particles and their
+  size distribution, as equivalent sphere (or circle) diameters in voxels.
+
+Particles that touch along a large, flat contact, with no narrowing between
+them, cannot be separated from their shape alone. Check the slices, and use a
+label map from your image processing software for important datasets if
+needed. The label map must start at 1, have the same shape as the image, and
+each particle must be one connected region; ``solveclosure.check_label_map``
+checks this.
+
 The PDEs
 --------
 
