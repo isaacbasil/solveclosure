@@ -22,7 +22,7 @@ def solve_closure(case_dir, img_path, label_map_path, voxel, cbd_surf_por, *, se
 
     Args:
         case_dir (str): The path to an empty directory where the OpenFOAM case will be built.
-        img_path (str): The path to the image of the electrode microstructure in tif format. Electrolyte labelled 0, AM as 1, CBD as 2 and separator as 3. Voxels labelled 51 (inactive material) are treated as electrolyte.
+        img_path (str): The path to the image of the electrode microstructure in tif format. Electrolyte labelled 0, AM as 1, CBD as 2, separator as 3 and inactive material as 51. Inactive material blocks the AM surface it touches (no reaction and no flux).
         label_map_path (str): The path to the label map which identifies particle IDs. Same dimensions as the image. 
         voxel (float): The voxel side length of the image in meters. 
         cbd_surf_por (float): The surface porosity of the CBD phase. 
@@ -119,9 +119,6 @@ def solve_closure(case_dir, img_path, label_map_path, voxel, cbd_surf_por, *, se
     cmd = f"cd {of_case_dir} && rm -rf ../closure_data.pickle postProcessing/ process* 0/particle_* constant/polyMesh/ constant/particle_* system/particle_* system/myFunctionsDict log*"
     subprocess.run(["bash", "-c", cmd], check=False)
 
-    # Inactive material is ignored and treated as elec
-    img[img == 51] = 0
-
     # subdivide tifs to find source terms
     subsections, centres, neighbour_ids = subdivide_image_using_label_map(label_map_path, img, show_subsections=False)
 
@@ -180,8 +177,8 @@ def solve_closure(case_dir, img_path, label_map_path, voxel, cbd_surf_por, *, se
     cmd = f"{load_of_cmd} && splitMeshRegions -case {of_case_dir} -cellZonesOnly -overwrite > {of_case_dir}log.splitMeshRegions 2>&1"
     subprocess.run(["bash", "-c", cmd], check=True)
 
-    # get rid of Elec, CBD and Sep dirs
-    cmd = f"cd {of_case_dir} && rm -rf 0/Elec constant/Elec system/Elec 0/CBD constant/CBD system/CBD 0/Sep constant/Sep system/Sep"
+    # get rid of Elec, CBD, Sep and Inactive dirs
+    cmd = f"cd {of_case_dir} && rm -rf 0/Elec constant/Elec system/Elec 0/CBD constant/CBD system/CBD 0/Sep constant/Sep system/Sep 0/Inactive constant/Inactive system/Inactive"
     subprocess.run(["bash", "-c", cmd], check=False)
 
     # write regionProperties file
@@ -206,7 +203,8 @@ def solve_closure(case_dir, img_path, label_map_path, voxel, cbd_surf_por, *, se
         # === files that are edited here (except p) and not be the user ===
 
         bc_path = of_case_dir + f"0/particle_{key}/T"
-        write_bc_file(bc_path, particle_name, bc_source_elec, bc_source_cbd, bc_source_sep, neighbour_ids, T_offset, allow_flux=allow_flux)
+        write_bc_file(bc_path, particle_name, bc_source_elec, bc_source_cbd, bc_source_sep, neighbour_ids, T_offset, allow_flux=allow_flux,
+                      touches_inactive="inactive" in neighbour_ids[key])
 
         p_path = of_case_dir + f"/0/particle_{key}/p"
         write_p_file(p_path, particle_name)

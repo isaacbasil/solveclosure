@@ -6,7 +6,7 @@ ALLOWED_LABELS = {
     1: "active material (AM)",
     2: "carbon-binder domain (CBD)",
     3: "separator",
-    51: "inactive material (treated as electrolyte)",
+    51: "inactive material (blocks the AM surface it touches)",
 }
 
 

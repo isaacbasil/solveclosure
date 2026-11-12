@@ -70,10 +70,11 @@ def subdivide_image_using_label_map(label_map_path, entire_img, show_subsections
             if np.any(primary_particle_mask & other_particle_mask_dilated):
                 neighbour_ids.append(other_id)
 
-        # check if particle touches elec, cbd or the separator
+        # check if particle touches elec, cbd, the separator or inactive material
         dilated_masks = {"elec": binary_dilation(np.copy(subsection) == 0),
                          "cbd": binary_dilation(np.copy(subsection) == 2),
-                         "sep": binary_dilation(np.copy(subsection) == 3),}
+                         "sep": binary_dilation(np.copy(subsection) == 3),
+                         "inactive": binary_dilation(np.copy(subsection) == 51),}
         for key, mask in dilated_masks.items():
             if np.any(primary_particle_mask & mask):
                 neighbour_ids.append(key)

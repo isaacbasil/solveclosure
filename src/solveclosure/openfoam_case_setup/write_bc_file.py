@@ -1,4 +1,4 @@
-def write_bc_file(file_path, particle_name, elec_source, cbd_source, sep_source, neighbour_ids, T_offset, allow_flux=True):
+def write_bc_file(file_path, particle_name, elec_source, cbd_source, sep_source, neighbour_ids, T_offset, allow_flux=True, touches_inactive=False):
     """
     Writes the OpenFOAM BC file for a particle  
     
@@ -11,6 +11,7 @@ def write_bc_file(file_path, particle_name, elec_source, cbd_source, sep_source,
         neighbour_ids (list): The IDs of particles which share a boundary with particle i.
         T_offset (float): A large number to prevent the OpenFOAM solver from encountering negative 'temperatures'.  
         allow_flux(bool): True for Option 1, False for Option 2 (see documentation).
+        touches_inactive (bool): True if the particle touches inactive material, which blocks its surface (zero flux).
 
     Returns:
     """
@@ -59,6 +60,15 @@ boundaryField
     {{
         type            fixedGradient;
         gradient        uniform {cbd_source};
+    }}
+"""
+
+    if touches_inactive:
+        # inactive material blocks the AM surface: no reaction and no flux
+        content += f"""
+    {particle_name}_to_Inactive
+    {{
+        type            zeroGradient;
     }}
 """
 

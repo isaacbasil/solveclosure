@@ -28,7 +28,7 @@ Label Phase
 1     Active material (AM)
 2     Carbon-binder domain (CBD)
 3     Separator (optional, see `Separators`_)
-51    Inactive material, treated as electrolyte
+51    Inactive material (optional, see `Inactive Material`_)
 ===== =====================================================
 
 A label map identifying the different AM particles within the electrode
@@ -74,6 +74,16 @@ results by the thickness of the layer.
 
 See ``examples/two_squares/solve_closure_separator_example.py`` for a complete
 example.
+
+Inactive Material
+-----------------
+
+Voxels labelled 51 are inactive material, for example particles that are no
+longer electrochemically active. Inactive material completely blocks the
+active material surface it touches: there is no reaction and no flux there,
+so those faces are not part of the particle surface area :math:`A_{i}` and
+have a zero-gradient boundary condition. This is the same as a separator with
+a surface porosity of 0.
 
 Generating a Label Map
 ----------------------
