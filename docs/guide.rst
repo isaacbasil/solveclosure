@@ -32,7 +32,7 @@ Label Phase
 ===== =====================================================
 
 A label map identifying the different AM particles within the electrode
-image is also recommended. However, a function is provided with the
+image is also required. However, a function is provided with the
 package to generate this if needed.
 
 Separators
@@ -78,12 +78,12 @@ example.
 Inactive Material
 -----------------
 
-Voxels labelled 51 are inactive material, for example particles that are no
-longer electrochemically active. Inactive material completely blocks the
+Voxels labelled 51 are inactive material, which some users may have in images
+used for microscale simulations (to avoid isolated electrolyte regions). 
+Inactive material completely blocks the
 active material surface it touches: there is no reaction and no flux there,
 so those faces are not part of the particle surface area :math:`A_{i}` and
-have a zero-gradient boundary condition. This is the same as a separator with
-a surface porosity of 0.
+have a zero-gradient boundary condition. 
 
 Generating a Label Map
 ----------------------
@@ -208,21 +208,10 @@ Convert them to dimensional values with the same :math:`L`:
 
    s = \frac{L}{D_{k}F}\hat{s}, \qquad t = \frac{L^{2}}{D_{k}}\hat{t}.
 
-Since :math:`\hat{s}` depends on the choice of :math:`L`, compare dimensionless
-results of different cases only if they were solved with the same :math:`L`, or
-convert them to :math:`s` first.
-
 With ``dimensionless=False``, the dimensional problem is solved directly, and
 ``D_s`` (:math:`D_{k}`, in m\ :sup:`2` s\ :sup:`-1`) must be given. The closure
 variable :math:`s` is then in mol s C\ :sup:`-1` m\ :sup:`-1`, which is the
-same as (mol m\ :sup:`-3`)/(A m\ :sup:`-2`): multiplied by a current density,
-it gives a concentration. Times are in seconds.
-
-Both give the same answer. For the two squares example (:math:`L` = 10 µm,
-:math:`D_{k}` = 4×10\ :sup:`-14` m\ :sup:`2` s\ :sup:`-1`), the dimensionless
-solve gives :math:`\hat{s}` = -0.065954, and
-:math:`L/(D_{k}F) \times \hat{s}` = -170.9 mol s C\ :sup:`-1` m\ :sup:`-1`, the
-result of the dimensional solve.
+same as (mol m\ :sup:`-3`)/(A m\ :sup:`-2`). Times are in seconds.
 
 Areas, volumes and positions in the results are always in SI units (m\ :sup:`2`,
 m\ :sup:`3` and m), whichever mode is used.
