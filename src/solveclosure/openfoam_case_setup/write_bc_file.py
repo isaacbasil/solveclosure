@@ -1,4 +1,4 @@
-def write_bc_file(file_path, particle_name, elec_source, cbd_source, sep_source, neighbour_ids, T_offset, allow_flux=True, touches_inactive=False):
+def write_bc_file(file_path, particle_name, elec_source, cbd_source, sep_source, neighbour_ids, T_offset, allow_flux=True):
     """
     Writes the OpenFOAM BC file for a particle  
     
@@ -8,10 +8,11 @@ def write_bc_file(file_path, particle_name, elec_source, cbd_source, sep_source,
         elec_source (float): The source term at the AM-elec boundary.  
         cbd_source (float): The source term at the AM-CBD boundary. False if there is no AM-CBD boundary.
         sep_source (float): The source term at the AM-separator boundary. False if there is no AM-separator boundary.
-        neighbour_ids (list): The IDs of particles which share a boundary with particle i.
+        neighbour_ids (list): What particle i shares a boundary with: the IDs of the neighbouring particles, and
+            "elec", "cbd", "sep" or "inactive" for the other phases it touches. A coupled patch is written for
+            each neighbouring particle, and a zero-flux patch if the particle touches inactive material.
         T_offset (float): A large number to prevent the OpenFOAM solver from encountering negative 'temperatures'.  
         allow_flux(bool): True for Option 1, False for Option 2 (see documentation).
-        touches_inactive (bool): True if the particle touches inactive material, which blocks its surface (zero flux).
 
     Returns:
     """
@@ -63,7 +64,7 @@ boundaryField
     }}
 """
 
-    if touches_inactive:
+    if "inactive" in neighbour_ids:
         # inactive material blocks the AM surface: no reaction and no flux
         content += f"""
     {particle_name}_to_Inactive

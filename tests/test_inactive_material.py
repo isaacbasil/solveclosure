@@ -67,6 +67,8 @@ def test_inactive_material_matches_separator_with_zero_porosity(tmp_path):
     with open(os.path.join(case_dir, "openfoam_case", "0", "particle_1", "T")) as f:
         bc = f.read()
     assert "particle_1_to_Inactive" in bc and "zeroGradient" in bc.split("particle_1_to_Inactive")[1].split("}")[0]
+    # only the particle's own neighbours get a coupled patch (not itself)
+    assert "particle_1_to_particle_2" in bc and "particle_1_to_particle_1" not in bc
     assert not os.path.exists(os.path.join(case_dir, "openfoam_case", "0", "Inactive"))
 
 

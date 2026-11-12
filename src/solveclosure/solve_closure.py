@@ -203,8 +203,7 @@ def solve_closure(case_dir, img_path, label_map_path, voxel, cbd_surf_por, *, se
         # === files that are edited here (except p) and not be the user ===
 
         bc_path = of_case_dir + f"0/particle_{key}/T"
-        write_bc_file(bc_path, particle_name, bc_source_elec, bc_source_cbd, bc_source_sep, neighbour_ids, T_offset, allow_flux=allow_flux,
-                      touches_inactive="inactive" in neighbour_ids[key])
+        write_bc_file(bc_path, particle_name, bc_source_elec, bc_source_cbd, bc_source_sep, neighbour_ids[key], T_offset, allow_flux=allow_flux)
 
         p_path = of_case_dir + f"/0/particle_{key}/p"
         write_p_file(p_path, particle_name)
