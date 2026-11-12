@@ -3,7 +3,7 @@ import numpy as np
 SEPARATOR_LABEL = 3
 
 
-def add_separator_layer(img, label_map, axis=0, side="start", thickness=1):
+def add_separator_layer(img, label_map, *, axis=0, side="start", thickness=1):
     """
     Adds a layer of separator voxels (label 3) to one face of an electrode image.
 

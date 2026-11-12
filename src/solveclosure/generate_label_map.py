@@ -6,7 +6,7 @@ from scipy import ndimage as ndi
 from skimage import measure, morphology, segmentation, filters
 from matplotlib import pyplot as plt
 
-def generate_label_map(input_path, write_path, show_image=False, sigma=2.0, compactness=0.01, maxima_algorithm='local_maxima', min_distance=5):
+def generate_label_map(input_path, write_path, *, show_image=False, sigma=2.0, compactness=0.01, maxima_algorithm='local_maxima', min_distance=5):
     """
     Generates and writes a label map for an electrode image using a watershed algorithm. 
 

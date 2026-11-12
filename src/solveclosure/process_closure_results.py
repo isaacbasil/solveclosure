@@ -5,7 +5,7 @@ import warnings
 from solveclosure.utility import load_openfoam_data
 
 
-def process_closure_results(case_dir, write=True):
+def process_closure_results(case_dir, *, write=True):
     """
     Processes the closure results from a solved OpenFOAM case, and writes them to the closure_data dictionary. 
 

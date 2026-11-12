@@ -15,7 +15,7 @@ STEADY_STATE_RTOL = 1e-3
 
 # ============ Inputs ==============
 
-def solve_closure(case_dir, img_path, label_map_path, voxel, cbd_surf_por, sep_surf_por=1.0, dimensionless=True, D_s=None, L=None, load_of_cmd=None, allow_flux=True, parallelise=False, n_procs=8, run_solver=True, T_offset=None, end_time=None, write_interval=None, continue_to_steady_state=True, max_end_time=None):
+def solve_closure(case_dir, img_path, label_map_path, voxel, cbd_surf_por, *, sep_surf_por=1.0, dimensionless=True, D_s=None, L=None, load_of_cmd=None, allow_flux=True, parallelise=False, n_procs=8, run_solver=True, T_offset=None, end_time=None, write_interval=None, continue_to_steady_state=True, max_end_time=None):
 
     """
     Solves the closure problem as described in [1] using OpenFOAM. 
