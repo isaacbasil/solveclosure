@@ -191,6 +191,42 @@ For Option 1, this gives
 
 Option 2 is non-dimensionalised in the same way.
 
+Dimensionless or Dimensional Solve
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+By default (``dimensionless=True``), ``solve_closure`` solves the dimensionless
+problem above. The result depends only on the geometry, so one solve can be
+used for any diffusivity :math:`D_{k}`, and ``D_s`` is not needed. The
+lengthscale :math:`L` is set with the ``L`` argument, in metres. By default it
+is the length of the image along axis 0 (number of voxels times ``voxel``).
+The value used is saved in the results under ``L``.
+
+The results of a dimensionless solve are :math:`\hat{s}` and :math:`\hat{t}`.
+Convert them to dimensional values with the same :math:`L`:
+
+.. math::
+
+   s = \frac{L}{D_{k}F}\hat{s}, \qquad t = \frac{L^{2}}{D_{k}}\hat{t}.
+
+Since :math:`\hat{s}` depends on the choice of :math:`L`, compare dimensionless
+results of different cases only if they were solved with the same :math:`L`, or
+convert them to :math:`s` first.
+
+With ``dimensionless=False``, the dimensional problem is solved directly, and
+``D_s`` (:math:`D_{k}`, in m\ :sup:`2` s\ :sup:`-1`) must be given. The closure
+variable :math:`s` is then in mol s C\ :sup:`-1` m\ :sup:`-1`, which is the
+same as (mol m\ :sup:`-3`)/(A m\ :sup:`-2`): multiplied by a current density,
+it gives a concentration. Times are in seconds.
+
+Both give the same answer. For the two squares example (:math:`L` = 10 µm,
+:math:`D_{k}` = 4×10\ :sup:`-14` m\ :sup:`2` s\ :sup:`-1`), the dimensionless
+solve gives :math:`\hat{s}` = -0.065954, and
+:math:`L/(D_{k}F) \times \hat{s}` = -170.9 mol s C\ :sup:`-1` m\ :sup:`-1`, the
+result of the dimensional solve.
+
+Areas, volumes and positions in the results are always in SI units (m\ :sup:`2`,
+m\ :sup:`3` and m), whichever mode is used.
+
 Solution of the PDEs
 --------------------
 
@@ -271,19 +307,93 @@ Managing Results
 
 Important outputs from the simulations are stored within the
 ``closure_data.pickle`` file, saved inside the case directory that you provide.
+It is a Python dictionary:
+
+.. code-block:: python
+
+   import pickle
+
+   with open("case_dir/closure_data.pickle", "rb") as f:
+       closure_data = pickle.load(f)
+
+   print(closure_data["global s surface average steady"])
 
 Most importantly, this contains the surface average of the closure
 variable under the keys:
 
-- ``global s surface average transient``  
-- ``global s surface average steady``  
+- ``global s surface average transient``: at each time in
+  ``times for transient data``
+- ``global s surface average steady``: the value at the last time, once
+  steady state has been reached
+
+These are :math:`\hat{s}` for a dimensionless case and :math:`s` for a
+dimensional one (see `Dimensionless or Dimensional Solve`_).
+
+The corrected surface average
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Both keys hold the *corrected* surface average: the surface average of the
+closure variable over all reacting AM surfaces (weighted by the CBD and
+separator surface porosities), minus its volume average over all of the AM.
+
+The closure problem has flux conditions on every boundary, so its solution is
+only defined up to a constant, which is fixed by requiring a volume average of
+zero. In theory, the volume average stays at zero during the simulation,
+because the volume source term exactly balances the flux through the reacting
+surfaces. In the simulation it can drift slightly away from zero; with Option 1
+this mostly comes from the coupling of neighbouring particles, which are solved
+as separate regions. Subtracting the volume average gives the surface average
+of the solution with zero volume average, and removes this drift. For example,
+in the two squares example the volume average drifts to about 1.6% of the
+surface average, but reducing that drift 17-fold changes the corrected surface
+average by only 0.002%.
+
+The uncorrected values can be recovered from the volume average:
+``global s surface average steady`` + ``global s volume average final``.
+
+Other results
+~~~~~~~~~~~~~
+
+``closure_data.pickle`` also contains:
+
+- ``times for transient data``: the times of the transient data
+  (:math:`\hat{t}`, or seconds for a dimensional case).
+- ``global s volume average transient`` and ``global s volume average final``:
+  the volume average of the closure variable over all of the AM, at each time
+  and at the last time.
+- ``total area (surface porosity included)``: the reacting AM surface area, with
+  the AM-CBD and AM-separator areas weighted by their surface porosities (m\ :sup:`2`).
+- ``am-elec area``, ``am-cbd area (surface porosity omitted)`` and
+  ``am-sep area (surface porosity omitted)``: the area of each type of AM
+  surface, without the surface porosities (m\ :sup:`2`).
+- ``total particle volume``: the volume of all of the AM (m\ :sup:`3`).
+- ``particle data``: a dictionary with one entry per particle ID, containing
+
+  - ``particle surface area``: the reacting surface area of the particle, with
+    surface porosities included (m\ :sup:`2`),
+  - ``particle volume`` (m\ :sup:`3`),
+  - ``centre x position``: the position of the particle's centre along axis 0 (m),
+  - ``s surf int transient``: the raw surface integral of the solver field over
+    the particle's reacting surface, weighted by the surface porosities, at each
+    time. It includes the ``T offset`` (see `The Solver`_), and areas are in the
+    units of the mesh (m\ :sup:`2` for a dimensional case, :math:`L^{2}` for a
+    dimensionless one). To get the particle's surface average, divide by its
+    surface area in the same units and subtract the ``T offset``.
+
+The settings of the case are saved too: ``dimensionless``, ``L`` (m, or
+``None`` for a dimensional case), ``voxel`` (m), ``cbd surface porosity`` and
+``sep surface porosity`` (``None`` if that phase is not in the image and no
+value was given), ``T offset``, ``end time`` (the time reached, including any
+continuations), ``write interval``, ``continue to steady state``,
+``max end time`` and ``continuations``. The key ``method`` (always
+``"multiparticle"``) is kept for compatibility with older results.
 
 ``solve_closure`` also saves ``surface_average.png`` in the case directory
 (``save_plot=True``, the default): the transient surface average against time,
 with its steady value, the window used for the steady-state check and the
 times at which the solver was continued.
 
-To look at the microscale fields. you can open the ``case.foam`` file within the OpenFOAM case using Paraview. 
+To look at the microscale fields, you can open the ``case.foam`` file within the OpenFOAM case using ParaView.
 The closure variable field is called ``T``, since OpenFOAM is normally solving for temperature.
 
 Reprocessing results
