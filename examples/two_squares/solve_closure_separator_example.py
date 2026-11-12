@@ -28,10 +28,9 @@ tifffile.imwrite(label_map_path, label_map)
 
 # parameters
 voxel = 1e-7
-cbd_surface_porosity = 0.5
 separator_surface_porosity = 0.4
 D_s = 4e-14
 
 # solve
-solveclosure.solve_closure(case_dir, img_path, label_map_path, voxel, cbd_surface_porosity,
-                           sep_surf_por=separator_surface_porosity, D_s=D_s, dimensionless=False)
+solveclosure.solve_closure(case_dir, img_path, label_map_path, voxel, sep_surf_por=separator_surface_porosity,
+                           D_s=D_s, dimensionless=False)

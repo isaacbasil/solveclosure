@@ -36,7 +36,7 @@ def solve(tmp_path, name, img, label_map, **kwargs):
     label_map_path = os.path.join(case_dir, "label_map.tif")
     tifffile.imwrite(img_path, img)
     tifffile.imwrite(label_map_path, label_map)
-    solveclosure.solve_closure(case_dir, img_path, label_map_path, VOXEL, 0.5, dimensionless=True, **kwargs)
+    solveclosure.solve_closure(case_dir, img_path, label_map_path, VOXEL, dimensionless=True, **kwargs)
     with open(os.path.join(case_dir, "closure_data.pickle"), "rb") as f:
         return case_dir, pickle.load(f)
 

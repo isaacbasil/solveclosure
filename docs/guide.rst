@@ -40,7 +40,7 @@ Separators
 
 Where active material touches the separator, the reaction is reduced by the
 separator surface porosity, :math:`\varepsilon_{\mathrm{sep}}^{\mathrm{surf}}`,
-set with the ``sep_surf_por`` argument (default 1, meaning no reduction).
+set with the ``sep_surf_por`` argument.
 Mark the separator by labelling its voxels 3. Only the boundary between AM and
 separator voxels matters, so a separator layer one voxel thick is enough.
 As for the CBD, the AM-separator area, weighted by the surface porosity, is

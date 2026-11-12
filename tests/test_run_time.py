@@ -23,7 +23,7 @@ F = 96485
 def solve(tmp_path, name, **kwargs):
     case_dir = os.path.join(str(tmp_path), name) + "/"
     os.makedirs(case_dir)
-    solveclosure.solve_closure(case_dir, IMG, LABEL_MAP, VOXEL, 0.5, **kwargs)
+    solveclosure.solve_closure(case_dir, IMG, LABEL_MAP, VOXEL, **kwargs)
     with open(os.path.join(case_dir, "closure_data.pickle"), "rb") as f:
         return case_dir, pickle.load(f)
 

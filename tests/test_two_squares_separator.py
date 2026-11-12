@@ -85,8 +85,8 @@ def test_unsupported_label_is_rejected():
 
 def test_separator_with_porosity_one_matches_electrolyte(tmp_path):
     img, label_map = load_two_squares()
-    elec = solve(tmp_path, "elec", img, label_map, cbd_surf_por=0.5, D_s=4e-14, dimensionless=False)
-    sep = solve(tmp_path, "sep", with_front_region(img, 3), label_map, cbd_surf_por=0.5,
+    elec = solve(tmp_path, "elec", img, label_map, D_s=4e-14, dimensionless=False)
+    sep = solve(tmp_path, "sep", with_front_region(img, 3), label_map,
                 sep_surf_por=1.0, D_s=4e-14, dimensionless=False)
 
     assert sep["am-sep area (surface porosity omitted)"] > 0
@@ -100,7 +100,7 @@ def test_separator_with_porosity_one_matches_electrolyte(tmp_path):
 def test_separator_matches_cbd_with_same_porosity(tmp_path):
     img, label_map = load_two_squares()
     cbd = solve(tmp_path, "cbd", with_front_region(img, 2), label_map, cbd_surf_por=0.3, dimensionless=True)
-    sep = solve(tmp_path, "sep", with_front_region(img, 3), label_map, cbd_surf_por=0.3,
+    sep = solve(tmp_path, "sep", with_front_region(img, 3), label_map,
                 sep_surf_por=0.3, dimensionless=True)
 
     assert sep["am-sep area (surface porosity omitted)"] == pytest.approx(cbd["am-cbd area (surface porosity omitted)"])
@@ -112,26 +112,27 @@ def test_add_separator_layer_matches_relabelled_image(tmp_path):
     L = img.shape[0] * VOXEL  # keep the same lengthscale for both cases
 
     relabelled = solve(tmp_path, "relabelled", with_front_region(img, 3), label_map,
-                       cbd_surf_por=0.5, sep_surf_por=0.4, dimensionless=True, L=L)
+                       sep_surf_por=0.4, dimensionless=True, L=L)
 
     cropped_img, cropped_lm = solveclosure.add_separator_layer(img[30:], label_map[30:], axis=0, side="start")
     padded = solve(tmp_path, "padded", cropped_img, cropped_lm,
-                   cbd_surf_por=0.5, sep_surf_por=0.4, dimensionless=True, L=L)
+                   sep_surf_por=0.4, dimensionless=True, L=L)
 
     assert padded["global s surface average steady"] == pytest.approx(relabelled["global s surface average steady"], rel=1e-9)
     # a separator with porosity 0.4 must change the result compared with plain electrolyte (porosity 1)
-    elec = solve(tmp_path, "elec", img, label_map, cbd_surf_por=0.5, dimensionless=True, L=L)
+    elec = solve(tmp_path, "elec", img, label_map, dimensionless=True, L=L)
     assert relabelled["global s surface average steady"] != pytest.approx(elec["global s surface average steady"], rel=1e-3)
 
 
 def test_case_settings_are_saved_and_reused(tmp_path):
     img, label_map = load_two_squares()
-    data = solve(tmp_path, "default_L", img, label_map, cbd_surf_por=0.5, dimensionless=True)
+    data = solve(tmp_path, "default_L", img, label_map, dimensionless=True)
 
     assert data["L"] == pytest.approx(img.shape[0] * VOXEL)  # default: length of axis 0
     assert data["voxel"] == VOXEL
 
-    assert data["cbd surface porosity"] == 0.5 and data["sep surface porosity"] == 1.0
+    # the image has no CBD or separator, so neither surface porosity applies and both are saved as None
+    assert data["cbd surface porosity"] is None and data["sep surface porosity"] is None
 
     # reprocessing reads the saved settings and must give the same result
     case_dir = os.path.join(str(tmp_path), "default_L") + "/"

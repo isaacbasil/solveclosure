@@ -17,7 +17,6 @@ def test_two_squares_dimensional():
 
     # parameters 
     voxel = 1e-7
-    cbd_surface_porosity = 0.5
     D_s = 4e-14
 
     # create a temporary directory to test
@@ -25,7 +24,7 @@ def test_two_squares_dimensional():
     subprocess.run(["bash", "-c", cmd], check=False)
 
     # solve 
-    solveclosure.solve_closure(case_dir, img_path, label_map_path, voxel, cbd_surface_porosity, D_s=D_s, dimensionless=False)
+    solveclosure.solve_closure(case_dir, img_path, label_map_path, voxel, D_s=D_s, dimensionless=False)
 
     # read steady state closure value
     closure_data_path = os.path.join(case_dir, "closure_data.pickle")

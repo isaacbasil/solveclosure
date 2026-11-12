@@ -17,14 +17,13 @@ def test_two_squares_dimensionless():
 
     # parameters 
     voxel = 1e-7
-    cbd_surface_porosity = 0.5
 
     # create a temporary directory to test
     cmd = f"mkdir {case_dir}"
     subprocess.run(["bash", "-c", cmd], check=False)
 
     # solve 
-    solveclosure.solve_closure(case_dir, img_path, label_map_path, voxel, cbd_surface_porosity, dimensionless=True)
+    solveclosure.solve_closure(case_dir, img_path, label_map_path, voxel, dimensionless=True)
 
     # read steady state closure value
     closure_data_path = os.path.join(case_dir, "closure_data.pickle")
