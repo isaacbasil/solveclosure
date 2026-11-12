@@ -5,7 +5,7 @@ import pickle
 import time 
 import warnings
 
-from solveclosure.utility import add_slash, check_for_existing_solutions, find_latest_openfoam_installation, check_image_labels, check_surface_porosities, merge_postprocessing_time_folders
+from solveclosure.utility import add_slash, check_for_existing_solutions, find_latest_openfoam_installation, check_image_labels, check_surface_porosities, merge_postprocessing_time_folders, save_surface_average_plot
 from solveclosure.image_analysis import calculate_source_terms_dimensional, calculate_source_terms_dimensionless, check_and_write_area_and_volume_total, return_x_positions, subdivide_image_using_label_map
 from solveclosure.openfoam_case_setup import make_blockMeshDict, make_topoSetDict, write_bc_file, write_fvOptions_file, write_myFunctionsDict, write_p_file, write_regionProperties_file, write_surface_integral_func, write_volume_integral_func, write_thermophysicalProperties_file, write_decomposeParDict_file, write_controlDict_file
 
@@ -15,7 +15,7 @@ STEADY_STATE_RTOL = 1e-3
 
 # ============ Inputs ==============
 
-def solve_closure(case_dir, img_path, label_map_path, voxel, *, cbd_surf_por=None, sep_surf_por=None, dimensionless=True, D_s=None, L=None, load_of_cmd=None, allow_flux=True, parallelise=False, n_procs=8, run_solver=True, T_offset=None, end_time=None, write_interval=None, continue_to_steady_state=True, max_end_time=None):
+def solve_closure(case_dir, img_path, label_map_path, voxel, *, cbd_surf_por=None, sep_surf_por=None, dimensionless=True, D_s=None, L=None, load_of_cmd=None, allow_flux=True, parallelise=False, n_procs=8, run_solver=True, T_offset=None, end_time=None, write_interval=None, continue_to_steady_state=True, max_end_time=None, save_plot=True):
 
     """
     Solves the closure problem as described in [1] using OpenFOAM. 
@@ -48,6 +48,8 @@ def solve_closure(case_dir, img_path, label_map_path, voxel, *, cbd_surf_por=Non
             A warning is shown if it has not. Default True.
         max_end_time (float, optional): The longest the solver may be continued to if steady state is not reached. Default 16 * end_time
             (up to four continuations). Ignored if continue_to_steady_state is False. If steady state is still not reached, a warning is shown.
+        save_plot (bool, optional): Save a png of the corrected global surface average of the closure variable against time
+            (``surface_average.png`` in case_dir), once the results have been processed. Ignored if run_solver is False. Default True.
         
     Returns:
         No returns. Operates on a filesystem directory. 
@@ -123,7 +125,7 @@ def solve_closure(case_dir, img_path, label_map_path, voxel, *, cbd_surf_por=Non
     of_case_dir = case_dir + "openfoam_case/"
     cmd = f"{load_of_cmd} && foamListTimes -rm -case {of_case_dir}"
     subprocess.run(["bash", "-c", cmd], check=True)
-    cmd = f"cd {of_case_dir} && rm -rf ../closure_data.pickle postProcessing/ process* 0/particle_* constant/polyMesh/ constant/particle_* system/particle_* system/myFunctionsDict log*"
+    cmd = f"cd {of_case_dir} && rm -rf ../closure_data.pickle ../surface_average.png postProcessing/ process* 0/particle_* constant/polyMesh/ constant/particle_* system/particle_* system/myFunctionsDict log*"
     subprocess.run(["bash", "-c", cmd], check=False)
 
     # subdivide tifs to find source terms
@@ -328,6 +330,11 @@ def solve_closure(case_dir, img_path, label_map_path, voxel, *, cbd_surf_por=Non
 
         # report the final state (warns if steady state was still not reached)
         check_steady_state(data["times for transient data"], data["global s surface average transient"], rtol=STEADY_STATE_RTOL)
+
+        if save_plot:
+            plot_path = case_dir + "surface_average.png"
+            save_surface_average_plot(data, plot_path)
+            print(f"Saved a plot of the surface average against time to {plot_path}")
 
     wall_end_time = time.time()
     print("\nThe total run time was ", round(wall_end_time - start_time, 1), " seconds.")

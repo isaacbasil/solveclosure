@@ -103,8 +103,10 @@ def test_short_end_time_warns_without_continuation(tmp_path):
 
 def test_continue_to_steady_state_false_stops_at_end_time(tmp_path):
     with pytest.warns(UserWarning, match="not reached steady state"):
-        _, data = solve(tmp_path, "no_continue", dimensionless=True, end_time=0.02, continue_to_steady_state=False)
+        case_dir, data = solve(tmp_path, "no_continue", dimensionless=True, end_time=0.02, continue_to_steady_state=False,
+                               save_plot=False)
     assert data["continuations"] == 0 and data["end time"] == 0.02
+    assert not os.path.exists(os.path.join(case_dir, "surface_average.png"))
     assert data["times for transient data"][-1] == pytest.approx(0.02)
 
 
@@ -120,3 +122,22 @@ def test_solver_is_continued_until_steady_state(tmp_path):
     assert t[-1] == pytest.approx(0.32) and np.all(np.diff(t) > 0)          # one continuous transient
     pp = os.path.join(case_dir, "openfoam_case", "postProcessing", "particle_1", "particle_1_volumeIntegral")
     assert os.listdir(pp) == ["0"]
+    assert os.path.isfile(os.path.join(case_dir, "surface_average.png"))   # saved by default
+
+
+# ---------- surface average plot (no OpenFOAM needed)
+
+def _closure_data(dimensionless, continuations, steady):
+    t = np.linspace(0.01, 1.0, 200)
+    s = -0.066 * (1 - np.exp(-t / (0.05 if steady else 0.8)))
+    return {"times for transient data": t, "global s surface average transient": s,
+            "global s surface average steady": s[-1], "dimensionless": dimensionless,
+            "end time": 1.0, "continuations": continuations}
+
+
+@pytest.mark.parametrize("dimensionless, continuations, steady", [(True, 0, True), (False, 2, False)])
+def test_save_surface_average_plot(tmp_path, dimensionless, continuations, steady):
+    from solveclosure.utility import save_surface_average_plot
+    path = str(tmp_path / "surface_average.png")
+    save_surface_average_plot(_closure_data(dimensionless, continuations, steady), path)
+    assert os.path.getsize(path) > 10000

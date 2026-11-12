@@ -278,6 +278,11 @@ variable under the keys:
 - ``global s surface average transient``  
 - ``global s surface average steady``  
 
+``solve_closure`` also saves ``surface_average.png`` in the case directory
+(``save_plot=True``, the default): the transient surface average against time,
+with its steady value, the window used for the steady-state check and the
+times at which the solver was continued.
+
 To look at the microscale fields. you can open the ``case.foam`` file within the OpenFOAM case using Paraview. 
 The closure variable field is called ``T``, since OpenFOAM is normally solving for temperature.
 
