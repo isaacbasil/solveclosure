@@ -30,10 +30,10 @@ def check_and_write_area_and_volume_total(closure_data, entire_img, voxel, cbd_s
         pp_V_am += value["particle volume"]
 
     if abs(pp_total_area - total_area) / total_area * 100 > 1:
-        raise ValueError("The total area from the image does not agree with the total area summed from individiual particles")
+        raise ValueError("The total area from the image does not agree with the total area summed from individual particles")
     
     if abs(pp_V_am - V_am) / V_am * 100 > 1:
-        raise ValueError("The total AM volume from the image does not agree with the total volume summed from individiual particles")
+        raise ValueError("The total AM volume from the image does not agree with the total volume summed from individual particles")
     
     closure_data["total area (surface porosity included)"] = total_area
     closure_data["am-elec area"] = area_am_elec

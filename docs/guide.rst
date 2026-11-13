@@ -471,11 +471,35 @@ viewing in ParaView (default ``end_time / 4``, updated when the solver is
 continued). It does not affect the results, because the surface and volume
 integrals are recorded at every time step.
 
-Template Directories
-~~~~~~~~~~~~~~~~~~~~
+Solver Settings
+~~~~~~~~~~~~~~~
 
-Template directories are contained within the repository, which are used to set
-up the OpenFOAM case.
+Each particle region is solved with the settings in two OpenFOAM files:
+``fvSchemes``, which sets the numerical schemes (for example the time-stepping
+scheme), and ``fvSolution``, which sets the linear solver and its tolerance.
+solveclosure provides default files, which suit most cases.
+
+To use your own settings, put your versions of both files in a folder and pass
+it with the ``solver_settings_dir`` argument:
+
+.. code-block:: python
+
+   solveclosure.solve_closure(
+       case_dir, img_path, label_map_path, voxel,
+       solver_settings_dir="my_settings",
+   )
+
+The folder must contain both files. The files that were used are copied to
+``solver_settings`` in the case directory. To start from the default files,
+copy them from the ``templates/solver_settings`` folder of the installed
+package; this command prints the folder of the installed package:
+
+.. code-block:: bash
+
+   python -c "import solveclosure; print(solveclosure.__path__[0])"
+
+See the OpenFOAM documentation for the contents of ``fvSchemes`` and
+``fvSolution``.
 
 Managing Results
 ----------------

@@ -4,18 +4,22 @@ import tifffile as tif
 import pickle
 import time 
 import warnings
+import shutil
 
 from solveclosure.utility import add_slash, check_for_existing_solutions, find_latest_openfoam_installation, check_image_labels, check_surface_porosities, merge_postprocessing_time_folders, save_surface_average_plot
 from solveclosure.image_analysis import calculate_source_terms_dimensional, calculate_source_terms_dimensionless, check_and_write_area_and_volume_total, return_x_positions, subdivide_image_using_label_map
 from solveclosure.openfoam_case_setup import make_blockMeshDict, make_topoSetDict, write_bc_file, write_fvOptions_file, write_myFunctionsDict, write_p_file, write_regionProperties_file, write_surface_integral_func, write_volume_integral_func, write_thermophysicalProperties_file, write_decomposeParDict_file, write_controlDict_file
 
 
+# OpenFOAM files that set the numerical schemes and linear solver of every particle region
+SOLVER_SETTINGS_FILES = ("fvSchemes", "fvSolution")
+
 # relative range (max - min) of the global surface average over the last half of the run below which it counts as steady
 STEADY_STATE_RTOL = 1e-3
 
 # ============ Inputs ==============
 
-def solve_closure(case_dir, img_path, label_map_path, voxel, *, cbd_surf_por=None, sep_surf_por=None, dimensionless=True, D_s=None, L=None, load_of_cmd=None, allow_flux=True, parallelise=False, n_procs=8, run_solver=True, T_offset=None, end_time=None, write_interval=None, continue_to_steady_state=True, max_end_time=None, save_plot=True, overwrite=False):
+def solve_closure(case_dir, img_path, label_map_path, voxel, *, cbd_surf_por=None, sep_surf_por=None, dimensionless=True, D_s=None, L=None, load_of_cmd=None, allow_flux=True, parallelise=False, n_procs=8, run_solver=True, T_offset=None, end_time=None, write_interval=None, continue_to_steady_state=True, max_end_time=None, save_plot=True, overwrite=False, solver_settings_dir=None):
 
     """
     Solves the closure problem as described in [1] using OpenFOAM. 
@@ -52,6 +56,8 @@ def solve_closure(case_dir, img_path, label_map_path, voxel, *, cbd_surf_por=Non
             (``surface_average.png`` in case_dir), once the results have been processed. Ignored if run_solver is False. Default True.
         overwrite (bool, optional): Set to True to replace a case that already exists in case_dir. If False and case_dir
             already contains a case, an error is raised. Default False.
+        solver_settings_dir (str, optional): A folder containing the OpenFOAM files fvSchemes and fvSolution to use for every
+            particle region, instead of the default ones. The files used are copied to solver_settings in case_dir. Default None.
         
     Returns:
         No returns. Operates on a filesystem directory. 
@@ -74,6 +80,11 @@ def solve_closure(case_dir, img_path, label_map_path, voxel, *, cbd_surf_por=Non
         raise ValueError("end_time must be positive.")
     if write_interval is not None and write_interval <= 0:
         raise ValueError("write_interval must be positive.")
+    if solver_settings_dir is not None:
+        missing = [f for f in SOLVER_SETTINGS_FILES if not os.path.isfile(os.path.join(solver_settings_dir, f))]
+        if missing:
+            raise FileNotFoundError(f"solver_settings_dir ({solver_settings_dir}) must contain {' and '.join(SOLVER_SETTINGS_FILES)}; "
+                                    f"missing: {', '.join(missing)}.")
 
     # correct path if slash not added at end, and check that no case would be overwritten by accident
     case_dir = add_slash(case_dir)
@@ -118,6 +129,10 @@ def solve_closure(case_dir, img_path, label_map_path, voxel, *, cbd_surf_por=Non
     template_path = os.path.join(os.path.dirname(__file__), "templates/")
     cmd = f"cp -r {template_path}openfoam_case {template_path}solver_settings {case_dir}"
     subprocess.run(["bash", "-c", cmd], check=True)
+    # the user's solver settings replace the default ones
+    if solver_settings_dir is not None:
+        for file_name in SOLVER_SETTINGS_FILES:
+            shutil.copyfile(os.path.join(solver_settings_dir, file_name), os.path.join(case_dir, "solver_settings", file_name))
 
     # write controlDict file
     controlDict_path = case_dir + "/openfoam_case/system/controlDict"
@@ -233,7 +248,7 @@ def solve_closure(case_dir, img_path, label_map_path, voxel, *, cbd_surf_por=Non
         vol_int_path = of_case_dir + f"/system/{particle_name}_volumeIntegral"
         write_volume_integral_func(vol_int_path, particle_name)
 
-        # === files that can be edited by the user ===
+        # === solver settings (the defaults, or the user's from solver_settings_dir) ===
         schemes_source_path = case_dir + "solver_settings/fvSchemes"
         system_path = of_case_dir + f"/system/particle_{key}/"
         cmd = f"cp {schemes_source_path} {system_path}"
