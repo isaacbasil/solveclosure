@@ -133,9 +133,7 @@ Input Files
   must be a single connected region (voxels connected through their faces).
 
 The voxels must be cubes, with the side length given by the ``voxel``
-argument, in metres. Axis 0 of the images is the x direction: the default
-lengthscale ``L`` is the length of the image along axis 0, and the particle
-centre x positions in the results are measured along it.
+argument, in metres. 
 
 ``solveclosure.check_label_map(img == 1, label_map)`` checks a label map
 against its electrode image. To create a label map, see
