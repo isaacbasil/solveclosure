@@ -107,7 +107,7 @@ has finished, this folder contains:
   steady corrected surface average, ``global s surface average steady``, is
   -0.06595.
 - ``surface_average.png``, a plot of the surface average against time.
-- ``openfoam_case``, the OpenFOAM case, which can be opened in ParaView to 
+- ``openfoam_case``, the OpenFOAM case, which can be opened in ParaView to
   view the closure variable fields.
 
 To solve the dimensional problem instead, add ``dimensionless=False`` and
@@ -123,7 +123,8 @@ Delete the existing case, or pass ``overwrite=True`` to replace it.
 Input Files
 -----------
 
-``solve_closure`` needs two 3D TIF images of the same shape:
+``solve_closure`` needs two 3D TIF images of the same shape (a 2D image can
+be used as a 3D image that is only 1 voxel thick):
 
 - the electrode image, in which each voxel is labelled with its phase (see
   `Allowed Phases`_), and
@@ -133,7 +134,7 @@ Input Files
   must be a single connected region (voxels connected through their faces).
 
 The voxels must be cubes, with the side length given by the ``voxel``
-argument, in metres. 
+argument, in metres.
 
 ``solveclosure.check_label_map(img == 1, label_map)`` checks a label map
 against its electrode image. To create a label map, see
