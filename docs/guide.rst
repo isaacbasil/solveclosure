@@ -107,7 +107,8 @@ has finished, this folder contains:
   steady corrected surface average, ``global s surface average steady``, is
   -0.06595.
 - ``surface_average.png``, a plot of the surface average against time.
-- ``openfoam_case``, the OpenFOAM case, which can be opened in ParaView.
+- ``openfoam_case``, the OpenFOAM case, which can be opened in ParaView to 
+  view the closure variable fields.
 
 To solve the dimensional problem instead, add ``dimensionless=False`` and
 ``D_s=4e-14`` (the diffusivity in m\ :sup:`2` s\ :sup:`-1`). The result is then
