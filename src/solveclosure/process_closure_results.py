@@ -40,7 +40,6 @@ def process_closure_results(case_dir, *, write=True):
     L = closure_data["L"]
     cbd_surf_por = closure_data["cbd surface porosity"]
     sep_surf_por = closure_data["sep surface porosity"]
-    closure_data["method"] = "multiparticle" # kept so existing results files and scripts that read this key still work
 
     t_initiated = False
 
