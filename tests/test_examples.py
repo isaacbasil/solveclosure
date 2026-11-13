@@ -42,6 +42,7 @@ def test_three_particles_are_found_by_generate_label_map(tmp_path):
     ("two_squares/solve_closure_separator_example.py", "two_squares_separator_case", -171.4),
     ("three_particles/three_particles_example.py", "three_particles_case", -0.1046),
 ])
+@pytest.mark.openfoam
 def test_example_scripts(tmp_path, monkeypatch, script, case_dir, expected):
     monkeypatch.chdir(tmp_path)   # the scripts build their case in the folder they are run from
     runpy.run_path(os.path.join(EXAMPLES_DIR, script), run_name="__main__")

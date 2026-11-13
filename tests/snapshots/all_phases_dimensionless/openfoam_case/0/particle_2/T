@@ -1,0 +1,52 @@
+
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    location    "0/particle_2";
+    object      T;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [ 0 0 0 1 0 0 0 ];
+
+internalField   uniform 10;
+
+boundaryField
+{
+    #includeEtc "caseDicts/setConstraintTypes"
+
+    particle_2_to_Elec
+    {
+        type            fixedGradient;
+        gradient        uniform -1;
+    }
+    outerWalls
+    {
+        type            zeroGradient;
+    }
+    defaultFaces
+    {
+        type            empty;
+    }
+    oldInternalFaces
+    {
+        type            empty;
+    }
+
+
+    particle_2_to_Inactive
+    {
+        type            zeroGradient;
+    }
+
+    particle_2_to_particle_1
+    {
+        type            compressible::turbulentTemperatureRadCoupledMixed;
+        qr              none;
+        value           $internalField;
+        Tnbr            T;
+        kappaMethod     solidThermo;
+    }
+}

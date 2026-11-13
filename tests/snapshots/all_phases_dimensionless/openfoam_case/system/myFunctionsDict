@@ -1,0 +1,13 @@
+
+
+functions
+{
+#includeFunc particle_1_volumeIntegral 
+#includeFunc particle_1_surfaceIntegral_elec 
+#includeFunc particle_1_surfaceIntegral_cbd 
+#includeFunc particle_1_surfaceIntegral_sep 
+#includeFunc particle_2_volumeIntegral 
+#includeFunc particle_2_surfaceIntegral_elec 
+
+}
+

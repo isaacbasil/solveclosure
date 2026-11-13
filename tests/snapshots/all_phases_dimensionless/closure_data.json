@@ -1,0 +1,34 @@
+{
+ "L": 8e-07,
+ "T offset": 10,
+ "am-cbd area (surface porosity omitted)": 1.2e-13,
+ "am-elec area": 5.199999999999999e-13,
+ "am-sep area (surface porosity omitted)": 1.5999999999999997e-13,
+ "cbd surface porosity": 0.5,
+ "continuations": 0,
+ "continue to steady state": true,
+ "dimensionless": true,
+ "end time": 0.25,
+ "global s surface average steady": null,
+ "global s surface average transient": null,
+ "global s volume average final": null,
+ "max end time": 4.0,
+ "particle data": {
+  "1": {
+   "centre x position": 2e-07,
+   "particle surface area": 3.2799999999999997e-13,
+   "particle volume": 4.799999999999999e-20
+  },
+  "2": {
+   "centre x position": 5e-07,
+   "particle surface area": 2.9999999999999993e-13,
+   "particle volume": 1.8e-20
+  }
+ },
+ "sep surface porosity": 0.3,
+ "times for transient data": null,
+ "total area (surface porosity included)": 6.279999999999999e-13,
+ "total particle volume": 6.599999999999999e-20,
+ "voxel": 1e-07,
+ "write interval": 0.0625
+}

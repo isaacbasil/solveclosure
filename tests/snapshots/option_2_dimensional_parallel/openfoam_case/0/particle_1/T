@@ -1,0 +1,55 @@
+
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    location    "0/particle_1";
+    object      T;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [ 0 0 0 1 0 0 0 ];
+
+internalField   uniform 100000.0;
+
+boundaryField
+{
+    #includeEtc "caseDicts/setConstraintTypes"
+
+    particle_1_to_Elec
+    {
+        type            fixedGradient;
+        gradient        uniform -259107633.31087732;
+    }
+    outerWalls
+    {
+        type            zeroGradient;
+    }
+    defaultFaces
+    {
+        type            empty;
+    }
+    oldInternalFaces
+    {
+        type            empty;
+    }
+
+
+    particle_1_to_CBD
+    {
+        type            fixedGradient;
+        gradient        uniform -129553816.65543866;
+    }
+
+    particle_1_to_Sep
+    {
+        type            fixedGradient;
+        gradient        uniform -77732289.9932632;
+    }
+
+    particle_1_to_particle_2
+    {
+        type            zeroGradient;
+    }
+}

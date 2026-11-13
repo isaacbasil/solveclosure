@@ -35,3 +35,9 @@ docs = [
 Homepage = "https://github.com/isaacbasil/solveclosure"
 Documentation = "https://solveclosure.readthedocs.io"
 
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "openfoam: needs an OpenFOAM installation (skipped if none is found)",
+    "parallel: runs OpenFOAM in parallel, so also needs MPI",
+]

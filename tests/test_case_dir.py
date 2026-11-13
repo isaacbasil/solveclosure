@@ -29,6 +29,7 @@ def test_no_error_with_overwrite_or_without_a_case(tmp_path):
 
 # ---------- with OpenFOAM
 
+@pytest.mark.openfoam
 def test_case_dir_is_created_and_can_be_overwritten(tmp_path):
     case_dir = str(tmp_path / "new" / "case")   # does not exist yet
     solveclosure.solve_closure(case_dir, IMG, LABEL_MAP, 1e-7, run_solver=False)

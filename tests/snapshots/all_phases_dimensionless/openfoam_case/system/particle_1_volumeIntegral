@@ -1,0 +1,13 @@
+
+type            volFieldValue;
+libs            ("libfieldFunctionObjects.so");
+log             true;
+writeFields     false;
+regionType      cellZone;
+region          particle_1;
+name            particle_1;
+operation       volIntegrate;
+weightField     none;
+fields          (T);
+writeControl    timeStep;
+writeInterval   1; 

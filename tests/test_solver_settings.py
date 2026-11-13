@@ -39,6 +39,7 @@ def test_missing_file_is_an_error(tmp_path):
 
 # ---------- with OpenFOAM
 
+@pytest.mark.openfoam
 def test_custom_settings_are_used_for_every_particle(tmp_path):
     case_dir = str(tmp_path / "case")
     solveclosure.solve_closure(case_dir, IMG, LABEL_MAP, 1e-7, solver_settings_dir=custom_settings(tmp_path),
@@ -50,6 +51,7 @@ def test_custom_settings_are_used_for_every_particle(tmp_path):
             assert "tolerance\t1e-10;" in f.read()
 
 
+@pytest.mark.openfoam
 def test_solve_with_custom_settings(tmp_path):
     # a tighter linear solver tolerance must give the same result as the defaults
     case_dir = str(tmp_path / "case")

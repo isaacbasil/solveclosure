@@ -55,6 +55,7 @@ def test_inactive_faces_are_not_reactive():
 
 # ---------- with OpenFOAM
 
+@pytest.mark.openfoam
 def test_inactive_material_matches_separator_with_zero_porosity(tmp_path):
     img, label_map = load_two_squares()
     case_dir, inactive = solve(tmp_path, "inactive", with_front_region(img, 51), label_map)
@@ -72,6 +73,7 @@ def test_inactive_material_matches_separator_with_zero_porosity(tmp_path):
     assert not os.path.exists(os.path.join(case_dir, "openfoam_case", "0", "Inactive"))
 
 
+@pytest.mark.openfoam
 def test_inactive_material_is_not_electrolyte(tmp_path):
     img, label_map = load_two_squares()
     _, electrolyte = solve(tmp_path, "electrolyte", img, label_map)

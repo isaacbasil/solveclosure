@@ -32,8 +32,8 @@ def process_closure_results(case_dir, *, write=True):
     required = ["T offset", "dimensionless", "L", "cbd surface porosity", "sep surface porosity"]
     missing = [key for key in required if key not in closure_data]
     if missing:
-        raise KeyError(f"closure_data.pickle is missing {missing}. Cases set up before solveclosure 0.2.0 do not save these settings; "
-                       "see 'Reprocessing results' in the user guide for how to add them.")
+        raise KeyError(f"closure_data.pickle is missing {missing}. Cases set up before solveclosure 0.2.0 do not save these "
+                       "settings; add them to closure_data.pickle with the values used for the solve.")
 
     offset = closure_data["T offset"]
     dimensionless = closure_data["dimensionless"]
@@ -140,6 +140,8 @@ def process_closure_results(case_dir, *, write=True):
         with open(closure_data_dict_path, 'wb') as closure_data_file:
             pickle.dump(closure_data, closure_data_file)
         print("the closure results were written to the closure data dictionary")
+
+    return closure_data
 
 
 def check_steady_state(t, s, window=0.5, rtol=1e-3):

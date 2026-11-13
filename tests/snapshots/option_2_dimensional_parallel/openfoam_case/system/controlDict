@@ -1,0 +1,48 @@
+
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application     chtMultiRegionFoam;
+
+startFrom       startTime;
+
+startTime       0;
+
+stopAt          endTime;
+
+endTime         3.9999999999999996;
+
+deltaT          0.001;
+
+writeControl    adjustableRunTime;
+
+writeInterval   0.9999999999999999;
+
+purgeWrite      0;
+
+writeFormat     binary;
+
+writePrecision  10;
+
+writeCompression off;
+
+timeFormat      general;
+
+timePrecision   6;
+
+runTimeModifiable true;
+
+maxCo           1.0;
+
+maxDi           10.0;
+
+adjustTimeStep  yes;
+
+#include myFunctionsDict

@@ -1,0 +1,14 @@
+
+type            surfaceFieldValue;
+libs            ("libfieldFunctionObjects.so");
+log             true;
+writeFields     false;
+regionType      patch;
+region          particle_1;
+name            particle_1_to_Elec;
+operation       areaIntegrate;
+weightField     none;
+mode            magnitude;
+fields          (T);
+writeControl    timeStep;
+writeInterval   1; 

@@ -83,6 +83,7 @@ def test_unsupported_label_is_rejected():
 
 # ---------- full solves (need OpenFOAM)
 
+@pytest.mark.openfoam
 def test_separator_with_porosity_one_matches_electrolyte(tmp_path):
     img, label_map = load_two_squares()
     elec = solve(tmp_path, "elec", img, label_map, D_s=4e-14, dimensionless=False)
@@ -97,6 +98,7 @@ def test_separator_with_porosity_one_matches_electrolyte(tmp_path):
     assert np.round(sep["global s surface average steady"], 1) == -170.9  # validated two squares value
 
 
+@pytest.mark.openfoam
 def test_separator_matches_cbd_with_same_porosity(tmp_path):
     img, label_map = load_two_squares()
     cbd = solve(tmp_path, "cbd", with_front_region(img, 2), label_map, cbd_surf_por=0.3, dimensionless=True)
@@ -107,6 +109,7 @@ def test_separator_matches_cbd_with_same_porosity(tmp_path):
     assert sep["global s surface average steady"] == pytest.approx(cbd["global s surface average steady"], rel=1e-9)
 
 
+@pytest.mark.openfoam
 def test_add_separator_layer_matches_relabelled_image(tmp_path):
     img, label_map = load_two_squares()
     L = img.shape[0] * VOXEL  # keep the same lengthscale for both cases
@@ -124,6 +127,7 @@ def test_add_separator_layer_matches_relabelled_image(tmp_path):
     assert relabelled["global s surface average steady"] != pytest.approx(elec["global s surface average steady"], rel=1e-3)
 
 
+@pytest.mark.openfoam
 def test_case_settings_are_saved_and_reused(tmp_path):
     img, label_map = load_two_squares()
     data = solve(tmp_path, "default_L", img, label_map, dimensionless=True)

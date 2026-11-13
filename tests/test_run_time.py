@@ -68,6 +68,7 @@ def test_merge_postprocessing_time_folders(tmp_path):
 
 # ---------- with OpenFOAM
 
+@pytest.mark.openfoam
 def test_end_time_and_write_interval_are_used(tmp_path):
     case_dir, data = solve(tmp_path, "settings", dimensionless=True, end_time=0.3, write_interval=0.05, run_solver=False)
     with open(os.path.join(case_dir, "openfoam_case", "system", "controlDict")) as f:
@@ -77,6 +78,7 @@ def test_end_time_and_write_interval_are_used(tmp_path):
     assert data["end time"] == 0.3 and data["write interval"] == 0.05
 
 
+@pytest.mark.openfoam
 def test_default_end_times(tmp_path):
     _, dimless = solve(tmp_path, "dimless", dimensionless=True, run_solver=False)
     _, dim = solve(tmp_path, "dim", dimensionless=False, D_s=D_S, run_solver=False)
@@ -86,6 +88,7 @@ def test_default_end_times(tmp_path):
     assert dimless["write interval"] == 0.0625 and dim["write interval"] == pytest.approx(dim["end time"] / 4)
 
 
+@pytest.mark.openfoam
 def test_dimensional_matches_dimensionless(tmp_path):
     _, dim = solve(tmp_path, "dim", dimensionless=False, D_s=D_S)
     _, dimless = solve(tmp_path, "dimless", dimensionless=True)
@@ -94,6 +97,7 @@ def test_dimensional_matches_dimensionless(tmp_path):
     assert dim["global s surface average steady"] == pytest.approx(L / (D_S * F) * dimless["global s surface average steady"], rel=1e-5)
 
 
+@pytest.mark.openfoam
 def test_short_end_time_warns_without_continuation(tmp_path):
     # t_hat = 0.0056 was the default in solveclosure 0.1.0 and stops long before steady state
     with pytest.warns(UserWarning, match="not reached steady state"):
@@ -101,6 +105,7 @@ def test_short_end_time_warns_without_continuation(tmp_path):
     assert data["continuations"] == 0
 
 
+@pytest.mark.openfoam
 def test_continue_to_steady_state_false_stops_at_end_time(tmp_path):
     with pytest.warns(UserWarning, match="not reached steady state"):
         case_dir, data = solve(tmp_path, "no_continue", dimensionless=True, end_time=0.02, continue_to_steady_state=False,
@@ -110,6 +115,7 @@ def test_continue_to_steady_state_false_stops_at_end_time(tmp_path):
     assert data["times for transient data"][-1] == pytest.approx(0.02)
 
 
+@pytest.mark.openfoam
 def test_solver_is_continued_until_steady_state(tmp_path):
     with warnings.catch_warnings():
         warnings.simplefilter("error", UserWarning)   # no steady state warning expected

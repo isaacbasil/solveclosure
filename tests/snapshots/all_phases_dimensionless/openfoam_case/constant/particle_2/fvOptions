@@ -1,0 +1,24 @@
+
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant/particle_2";
+    object      fvOptions;
+}
+
+options
+{
+    energySource
+    {
+        type            scalarSemiImplicitSource;
+        selectionMode   all;
+        volumeMode      specific;
+
+        injectionRateSuSp
+        {
+            h          (13.33333333333333 0); // W/m^3 == kg/m/s^3
+        }
+    }
+}
