@@ -77,25 +77,18 @@ Quick Start
 The two squares example is a small case: an image of 100 × 100 × 10 voxels of
 0.1 µm, with two touching active material particles in electrolyte. The
 particles have square cross-sections of 40 × 40 and 20 × 20 voxels and run
-through the whole thickness of the image. The example files are in the
-solveclosure repository, so first clone it:
-
-.. code-block:: bash
-
-   git clone https://github.com/isaacbasil/solveclosure.git
-   cd solveclosure
-
-Then run, from the ``solveclosure`` folder:
+through the whole thickness of the image. The example images are installed with
+solveclosure, and ``solveclosure.example_path`` gives their location. Run:
 
 .. code-block:: python
 
    import solveclosure
 
    solveclosure.solve_closure(
-       "two_squares_case",                               # case_dir
-       "examples/two_squares/two_squares.tif",           # electrode image
-       "examples/two_squares/two_squares_label_map.tif", # label map
-       1e-7,                                             # voxel size (m)
+       "two_squares_case",                                      # case_dir
+       solveclosure.example_path("two_squares.tif"),            # image
+       solveclosure.example_path("two_squares_label_map.tif"),  # label map
+       1e-7,                                                    # voxel (m)
        load_of_cmd="source /usr/lib/openfoam/openfoam2412/etc/bashrc",
    )
 
@@ -113,9 +106,8 @@ has finished, this folder contains:
 To solve the dimensional problem instead, add ``dimensionless=False`` and
 ``D_s=4e-14`` (the diffusivity in m\ :sup:`2` s\ :sup:`-1`). The result is then
 -170.9 mol s C\ :sup:`-1` m\ :sup:`-1` (see
-`Dimensionless or Dimensional Solve`_).
-``examples/two_squares/solve_closure_example.py`` runs this dimensional case,
-in a folder called ``two_squares_case``.
+`Dimensionless or Dimensional Solve`_). More examples, with their scripts, are
+on the :doc:`examples` page.
 
 If ``case_dir`` already contains a case, ``solve_closure`` stops with an error.
 Delete the existing case, or pass ``overwrite=True`` to replace it.
@@ -218,8 +210,7 @@ lengthscale used is saved in the results under ``L``. Adding the layer at the
 start of axis 0 also shifts the particle centre x positions stored in the
 results by the thickness of the layer.
 
-See ``examples/two_squares/solve_closure_separator_example.py`` for a complete
-example.
+See the :doc:`examples` page for a complete example.
 
 Inactive Material
 ~~~~~~~~~~~~~~~~~

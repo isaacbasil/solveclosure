@@ -9,7 +9,7 @@ import numpy as np
 
 def test_two_squares_dimensional():
     # preparing paths 
-    demo_path = os.path.join(os.getcwd(), "examples/two_squares/")
+    demo_path = os.path.dirname(solveclosure.example_path("two_squares.tif"))
     case_dir = os.path.join(demo_path, "results/")
     img_path = os.path.join(demo_path, "two_squares.tif")
     label_map_path = os.path.join(demo_path, "two_squares_label_map.tif")

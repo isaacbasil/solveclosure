@@ -25,4 +25,5 @@ See the following articles for more information:
    :caption: Contents:
 
    guide
+   examples
    api

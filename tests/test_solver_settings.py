@@ -8,7 +8,7 @@ import pytest
 
 import solveclosure
 
-DEMO_PATH = os.path.join(os.path.dirname(__file__), "..", "examples", "two_squares")
+DEMO_PATH = os.path.dirname(solveclosure.example_path("two_squares.tif"))
 IMG = os.path.join(DEMO_PATH, "two_squares.tif")
 LABEL_MAP = os.path.join(DEMO_PATH, "two_squares_label_map.tif")
 DEFAULTS = os.path.join(os.path.dirname(solveclosure.__file__), "templates", "solver_settings")

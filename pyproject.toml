@@ -23,7 +23,7 @@ dependencies = [
 ]
 
 [tool.setuptools.package-data]
-"solveclosure" = ["templates/**/*"]
+"solveclosure" = ["templates/**/*", "example_data/*.tif"]
 
 [project.optional-dependencies]
 docs = [

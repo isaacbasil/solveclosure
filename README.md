@@ -52,3 +52,20 @@ solveclosure.solve_closure(
 )
 
 ```
+
+## 📂 Examples
+
+solveclosure is installed with small example images, and `solveclosure.example_path` gives their location:
+
+```python
+import solveclosure
+
+solveclosure.solve_closure(
+    "two_squares_case",
+    solveclosure.example_path("two_squares.tif"),
+    solveclosure.example_path("two_squares_label_map.tif"),
+    1e-7,
+)
+```
+
+Example scripts are in the [examples](https://github.com/isaacbasil/solveclosure/tree/main/examples) folder, and are described, with their expected results, on the [Examples](https://solveclosure.readthedocs.io/en/latest/examples.html) page of the documentation.

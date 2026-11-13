@@ -10,7 +10,7 @@ import tifffile
 import solveclosure
 from solveclosure.utility import check_surface_porosities
 
-DEMO_PATH = os.path.join(os.path.dirname(__file__), "..", "examples", "two_squares")
+DEMO_PATH = os.path.dirname(solveclosure.example_path("two_squares.tif"))
 
 
 def image_with(*labels):

@@ -10,6 +10,8 @@ package:
   solved case.
 * :func:`solveclosure.generate_label_map` generates a label map of the active
   material particles, if you do not already have one.
+* :func:`solveclosure.example_path` gives the path of an example image
+  installed with solveclosure (see :doc:`examples`).
 
 Full module listing
 -------------------

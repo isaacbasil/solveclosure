@@ -13,7 +13,7 @@ import tifffile
 import solveclosure
 from solveclosure.image_analysis import calculate_area_and_volume
 
-DEMO_PATH = os.path.join(os.path.dirname(__file__), "..", "examples", "two_squares")
+DEMO_PATH = os.path.dirname(solveclosure.example_path("two_squares.tif"))
 VOXEL = 1e-7
 
 

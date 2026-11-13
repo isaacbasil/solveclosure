@@ -11,7 +11,7 @@ from scipy import ndimage as ndi
 import solveclosure
 from solveclosure.generate_label_map import check_label_map, _label_dtype
 
-DEMO_PATH = os.path.join(os.path.dirname(__file__), "..", "examples", "two_squares")
+DEMO_PATH = os.path.dirname(solveclosure.example_path("two_squares.tif"))
 
 
 def make_packing(n=96, n_spheres=150, rmin=5, rmax=11, overlap=0.8, seed=0):

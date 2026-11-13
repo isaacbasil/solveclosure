@@ -12,7 +12,7 @@ import solveclosure
 from solveclosure.process_closure_results import check_steady_state
 from solveclosure.utility import load_openfoam_data, merge_postprocessing_time_folders
 
-DEMO_PATH = os.path.join(os.path.dirname(__file__), "..", "examples", "two_squares")
+DEMO_PATH = os.path.dirname(solveclosure.example_path("two_squares.tif"))
 IMG = os.path.join(DEMO_PATH, "two_squares.tif")
 LABEL_MAP = os.path.join(DEMO_PATH, "two_squares_label_map.tif")
 VOXEL = 1e-7
