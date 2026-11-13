@@ -1,19 +1,17 @@
-import os 
-def check_for_existing_solutions(case_dir):
+import os
+
+
+def check_for_existing_solutions(case_dir, overwrite=False):
     """
-    Checks if a closure solution already exists in the case directory provided and prompts user. 
-    
+    Raises an error if the case directory already contains a closure problem case, unless overwrite is True.
+
     Args:
         case_dir (str): The path to the directory where the OpenFOAM case will be built.
+        overwrite (bool): Set to True to replace an existing case. Default False.
 
-    Returns: 
+    Returns:
     """
 
-    solutions_exist = os.path.isdir(os.path.join(case_dir, "openfoam_case"))
-
-    if solutions_exist:
-        response = input("\n Closure problem solutions were found in this case_dir already. Are you sure you want to continue? (y/n)").strip().lower()
-
-        if response != "y":
-            print("Aborting.")
-            exit()
+    if not overwrite and os.path.isdir(os.path.join(case_dir, "openfoam_case")):
+        raise FileExistsError(f"{case_dir} already contains a closure problem case (the openfoam_case folder). "
+                              "Delete it, or pass overwrite=True to replace it.")

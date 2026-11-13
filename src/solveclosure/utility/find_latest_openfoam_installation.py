@@ -53,10 +53,9 @@ def find_latest_openfoam_installation():
 
 
     installs = find_all_openfoam_installations()
-    print(installs)
     if not installs:
-        print("No OpenFOAM installations found in common paths.")
-        exit(1)
+        raise FileNotFoundError("No OpenFOAM installation was found in /opt, /usr/lib/openfoam or /usr/local. "
+                                "Pass the command that loads OpenFOAM with the load_of_cmd argument.")
 
     latest = pick_latest(installs)
     print("Available OpenFOAM installations:")

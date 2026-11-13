@@ -221,3 +221,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# case folders created by running the examples
+two_squares_case/
+two_squares_separator_case/

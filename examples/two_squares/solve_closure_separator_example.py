@@ -4,15 +4,17 @@
 # one-voxel separator layer (label 3) is added in front of it with add_separator_layer.
 # Particle 1 then reacts with the separator (scaled by sep_surf_por) instead of the
 # electrolyte on that face.
+#
+# Run it from any folder: the case is built in "two_squares_separator_case", in the folder it is run from.
 import os
 import tifffile
 import solveclosure
 
-# set the path to the directory where the openfoam case will be run
-case_dir = "path/to/your/case/directory/"
+# the folder where the OpenFOAM case is built
+case_dir = "two_squares_separator_case"
 
-# preparing image paths - don't change this
-demo_path = os.path.join(os.getcwd(), "examples/two_squares/")
+# the example images, next to this script
+demo_path = os.path.dirname(os.path.abspath(__file__))
 img = tifffile.imread(os.path.join(demo_path, "two_squares.tif"))
 label_map = tifffile.imread(os.path.join(demo_path, "two_squares_label_map.tif"))
 
@@ -31,6 +33,7 @@ voxel = 1e-7
 separator_surface_porosity = 0.4
 D_s = 4e-14
 
-# solve
+# solve. overwrite=True replaces the case from a previous run of this example.
+# If OpenFOAM is not found automatically, add load_of_cmd="source /path/to/openfoam/etc/bashrc".
 solveclosure.solve_closure(case_dir, img_path, label_map_path, voxel, sep_surf_por=separator_surface_porosity,
-                           D_s=D_s, dimensionless=False)
+                           D_s=D_s, dimensionless=False, overwrite=True)

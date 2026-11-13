@@ -15,13 +15,13 @@ STEADY_STATE_RTOL = 1e-3
 
 # ============ Inputs ==============
 
-def solve_closure(case_dir, img_path, label_map_path, voxel, *, cbd_surf_por=None, sep_surf_por=None, dimensionless=True, D_s=None, L=None, load_of_cmd=None, allow_flux=True, parallelise=False, n_procs=8, run_solver=True, T_offset=None, end_time=None, write_interval=None, continue_to_steady_state=True, max_end_time=None, save_plot=True):
+def solve_closure(case_dir, img_path, label_map_path, voxel, *, cbd_surf_por=None, sep_surf_por=None, dimensionless=True, D_s=None, L=None, load_of_cmd=None, allow_flux=True, parallelise=False, n_procs=8, run_solver=True, T_offset=None, end_time=None, write_interval=None, continue_to_steady_state=True, max_end_time=None, save_plot=True, overwrite=False):
 
     """
     Solves the closure problem as described in [1] using OpenFOAM. 
 
     Args:
-        case_dir (str): The path to an empty directory where the OpenFOAM case will be built.
+        case_dir (str): The path to the directory where the OpenFOAM case will be built. It is created if it does not exist.
         img_path (str): The path to the image of the electrode microstructure in tif format. Electrolyte labelled 0, AM as 1, CBD as 2, separator as 3 and inactive material as 51. Inactive material blocks the AM surface it touches (no reaction and no flux).
         label_map_path (str): The path to the label map which identifies particle IDs. Same dimensions as the image. 
         voxel (float): The voxel side length of the image in meters. 
@@ -50,6 +50,8 @@ def solve_closure(case_dir, img_path, label_map_path, voxel, *, cbd_surf_por=Non
             (up to four continuations). Ignored if continue_to_steady_state is False. If steady state is still not reached, a warning is shown.
         save_plot (bool, optional): Save a png of the corrected global surface average of the closure variable against time
             (``surface_average.png`` in case_dir), once the results have been processed. Ignored if run_solver is False. Default True.
+        overwrite (bool, optional): Set to True to replace a case that already exists in case_dir. If False and case_dir
+            already contains a case, an error is raised. Default False.
         
     Returns:
         No returns. Operates on a filesystem directory. 
@@ -73,6 +75,11 @@ def solve_closure(case_dir, img_path, label_map_path, voxel, *, cbd_surf_por=Non
     if write_interval is not None and write_interval <= 0:
         raise ValueError("write_interval must be positive.")
 
+    # correct path if slash not added at end, and check that no case would be overwritten by accident
+    case_dir = add_slash(case_dir)
+    check_for_existing_solutions(case_dir, overwrite)
+    os.makedirs(case_dir, exist_ok=True)
+
     start_time = time.time()
 
     # load tif
@@ -89,11 +96,6 @@ def solve_closure(case_dir, img_path, label_map_path, voxel, *, cbd_surf_por=Non
     # look for OF 
     if load_of_cmd is None:
         load_of_cmd = find_latest_openfoam_installation()
-        
-    # correct path if slash not added at end
-    case_dir = add_slash(case_dir)
-
-    check_for_existing_solutions(case_dir)
 
     if dimensionless and L is None:
         print("\nLengthscale not provided for dimensionless case. Setting to length of the image's axis 0 by default.")

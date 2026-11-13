@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: solveclosure
+authors:
+  - family-names: Paten
+    given-names: Isaac
+version: 0.1.0
+doi: 10.5281/zenodo.17558923
+date-released: 2025-11-10
+license: MIT
+repository-code: https://github.com/isaacbasil/solveclosure

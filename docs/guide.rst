@@ -18,13 +18,127 @@ The user must have:
 1. A Linux system. If using Windows, this can be done easily using Windows
    Subsystem for Linux (WSL). The package may work on Mac, but it has
    not been tested.
-2. An OpenFOAM installation.
-3. A TIF image of their electrode structure, using the labels in
-   `Allowed Phases`_.
+2. An OpenFOAM installation from openfoam.com (see `OpenFOAM`_).
+3. A TIF image of their electrode structure, and a label map of its
+   particles (see `Input Files`_). If you do not have a label map, it can be
+   generated with ``generate_label_map`` (see `Generating a Label Map`_).
 
-A label map identifying the different AM particles within the electrode
-image is also required. However, a function is provided with the
-package to generate this if needed (see `Generating a Label Map`_).
+Installation
+------------
+
+solveclosure needs Python 3.8 or later. Install it from PyPI, preferably in a
+virtual environment:
+
+.. code-block:: bash
+
+   python3 -m venv venv
+   source venv/bin/activate
+   pip install solveclosure
+
+OpenFOAM
+~~~~~~~~
+
+solveclosure uses the OpenFOAM version from openfoam.com (ESI-OpenCFD). It has
+been tested with v2006 and v2412. Older versions may not work: v1912, as
+packaged by Ubuntu, failed in our tests. The OpenFOAM Foundation version
+(openfoam.org) has not been tested.
+
+On Ubuntu, including Ubuntu on WSL, a precompiled OpenFOAM can be installed
+with the commands below. See https://dl.openfoam.com for other systems.
+
+.. code-block:: bash
+
+   curl -s https://dl.openfoam.com/add-debian-repo.sh | sudo bash
+   sudo apt-get update
+   sudo apt-get install openfoam2412-default
+
+solveclosure finds your OpenFOAM installation automatically: it looks for
+folders named ``openfoam*`` in ``/opt``, ``/usr/lib/openfoam`` and
+``/usr/local``, picks the last one in alphabetical order and loads OpenFOAM by
+sourcing its ``etc/bashrc``. This finds the installation above.
+
+If OpenFOAM is installed somewhere else, or if several versions are installed,
+give the command that loads OpenFOAM with the ``load_of_cmd`` argument of
+``solve_closure``. solveclosure runs this command in ``bash`` before each
+OpenFOAM tool. For example:
+
+.. code-block:: python
+
+   load_of_cmd = "source /usr/lib/openfoam/openfoam2412/etc/bashrc"
+
+On computers that use environment modules, such as most HPCs, it is usually a
+``module load`` command (see `Running on a High-Performance Computer (HPC)`_).
+If no installation is found and ``load_of_cmd`` is not given, an error is
+raised.
+
+Quick Start
+-----------
+
+The two squares example is a small case: an image of 100 × 100 × 10 voxels of
+0.1 µm, with two touching active material particles in electrolyte. The
+particles have square cross-sections of 40 × 40 and 20 × 20 voxels and run
+through the whole thickness of the image. The example files are in the
+solveclosure repository, so first clone it:
+
+.. code-block:: bash
+
+   git clone https://github.com/isaacbasil/solveclosure.git
+   cd solveclosure
+
+Then run, from the ``solveclosure`` folder:
+
+.. code-block:: python
+
+   import solveclosure
+
+   solveclosure.solve_closure(
+       "two_squares_case",                               # case_dir
+       "examples/two_squares/two_squares.tif",           # electrode image
+       "examples/two_squares/two_squares_label_map.tif", # label map
+       1e-7,                                             # voxel size (m)
+       load_of_cmd="source /usr/lib/openfoam/openfoam2412/etc/bashrc",
+   )
+
+This solves the dimensionless closure problem (the default). The case is built
+in ``two_squares_case``, which is created if it does not exist. When the solver
+has finished, this folder contains:
+
+- ``closure_data.pickle``, with the results (see `Managing Results`_). The
+  steady corrected surface average, ``global s surface average steady``, is
+  -0.06595.
+- ``surface_average.png``, a plot of the surface average against time.
+- ``openfoam_case``, the OpenFOAM case, which can be opened in ParaView.
+
+To solve the dimensional problem instead, add ``dimensionless=False`` and
+``D_s=4e-14`` (the diffusivity in m\ :sup:`2` s\ :sup:`-1`). The result is then
+-170.9 mol s C\ :sup:`-1` m\ :sup:`-1` (see
+`Dimensionless or Dimensional Solve`_).
+``examples/two_squares/solve_closure_example.py`` runs this dimensional case,
+in a folder called ``two_squares_case``.
+
+If ``case_dir`` already contains a case, ``solve_closure`` stops with an error.
+Delete the existing case, or pass ``overwrite=True`` to replace it.
+
+Input Files
+-----------
+
+``solve_closure`` needs two 3D TIF images of the same shape:
+
+- the electrode image, in which each voxel is labelled with its phase (see
+  `Allowed Phases`_), and
+- the label map, which gives each active material particle its own ID. Every
+  AM voxel has the ID of its particle, and all other voxels are 0. The IDs
+  must run from 1 to the number of particles without gaps, and each particle
+  must be a single connected region (voxels connected through their faces).
+
+The voxels must be cubes, with the side length given by the ``voxel``
+argument, in metres. Axis 0 of the images is the x direction: the default
+lengthscale ``L`` is the length of the image along axis 0, and the particle
+centre x positions in the results are measured along it.
+
+``solveclosure.check_label_map(img == 1, label_map)`` checks a label map
+against its electrode image. To create a label map, see
+`Generating a Label Map`_.
 
 Allowed Phases
 --------------
@@ -150,9 +264,7 @@ Next to the label map, two images are saved for checking the result:
 Particles that touch along a large, flat contact, with no narrowing between
 them, cannot be separated from their shape alone. Check the slices, and use a
 label map from your image processing software for important datasets if
-needed. The label map must start at 1, have the same shape as the image, and
-each particle must be one connected region; ``solveclosure.check_label_map``
-checks this.
+needed. The label map must meet the requirements in `Input Files`_.
 
 The PDEs
 --------
@@ -483,11 +595,20 @@ Running on a High-Performance Computer (HPC)
 
 By default, the closure problem will be solved locally on a single core. The
 solver can be parallelised on your local machine by using the ``parallelise``
-argument. For large cases, it may be necessary to use a HPC, to access more
-cores and/or memory.
+argument, with ``n_procs`` processes (default 8). Use no more processes than
+the computer has physical cores: with more, the solver becomes much slower
+instead of faster. For large cases, it may be necessary to use a HPC, to access
+more cores and/or memory.
 
-You should first copy the template ``sbatch_launch_script`` from the templates
-directory. This gives an outline of a script for a HPC that uses Slurm. Modify:
+You should first copy the template ``sbatch_launch_script.sh`` from the
+``templates`` directory of the installed package. This command prints the
+folder of the installed package, which contains ``templates``:
+
+.. code-block:: bash
+
+   python -c "import solveclosure; print(solveclosure.__path__[0])"
+
+The template gives an outline of a script for a HPC that uses Slurm. Modify:
 
 1. The ``#SBATCH --partition`` command. Contact your system administrator if
    unsure what to put here.
@@ -519,3 +640,16 @@ Checklist:
 * Ensure that the python package is accessible by the HPC nodes (your virtual
   environment may not exist on the HPC). Contact your system administrator to
   do this.
+
+Citing solveclosure
+-------------------
+
+If you use solveclosure in your work, please cite the articles by Paten et al.:
+
+* https://doi.org/10.1149/1945-7111/ae335f
+* https://doi.org/10.1149/1945-7111/ae3527
+
+and the software itself, archived on Zenodo:
+https://doi.org/10.5281/zenodo.17558923. The citation details are also in the
+``CITATION.cff`` file of the repository, from which GitHub generates its "Cite
+this repository" button.
