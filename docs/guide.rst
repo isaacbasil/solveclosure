@@ -211,7 +211,7 @@ Convert them to dimensional values with the same :math:`L`:
 With ``dimensionless=False``, the dimensional problem is solved directly, and
 ``D_s`` (:math:`D_{k}`, in m\ :sup:`2` s\ :sup:`-1`) must be given. The closure
 variable :math:`s` is then in mol s C\ :sup:`-1` m\ :sup:`-1`, which is the
-same as (mol m\ :sup:`-3`)/(A m\ :sup:`-2`). Times are in seconds.
+same as (mol m\ :sup:`-3`)/(A m\ :sup:`-2`). Times are in seconds.sc
 
 Areas, volumes and positions in the results are always in SI units (m\ :sup:`2`,
 m\ :sup:`3` and m), whichever mode is used.
@@ -247,8 +247,7 @@ the solver must run long enough to reach it. The end time is set with the
 
 - :math:`\hat{t} = 0.25` for a dimensionless case, and
 - :math:`t = (\textrm{image length along axis 0})^{2}/(4D_{k})` for a
-  dimensional case, which is the same physical time when :math:`L` is the
-  image length.
+  dimensional case.
 
 This is enough for many cases. Larger connected networks of particles take
 longer to settle (up to about :math:`\hat{t} = 1` for a network spanning the
@@ -266,8 +265,9 @@ stopped, with the end time doubled, and the check is repeated. The time
 stepping is unchanged, so the transient results are the same as for one
 continuous run. This repeats until steady state is reached or the end time
 would exceed ``max_end_time`` (default ``16 * end_time``, which allows up to
-four continuations); in that case a warning is shown. To stop at ``end_time``
-regardless, set ``continue_to_steady_state=False``; a warning is still shown
+four continuations); in that case a warning is shown. To turn off this automatic 
+continuation feature, and force the solver to stop at ``end_time``, set 
+``continue_to_steady_state=False``; a warning is still shown
 if steady state was not reached. The end time that was
 reached and the number of continuations are saved in ``closure_data.pickle``
 under ``end time`` and ``continuations``.
@@ -334,8 +334,10 @@ this mostly comes from the coupling of neighbouring particles, which are solved
 as separate regions. Subtracting the volume average gives the surface average
 of the solution with zero volume average, and removes this drift. For example,
 in the two squares example the volume average drifts to about 1.6% of the
-surface average, but reducing that drift 17-fold changes the corrected surface
-average by only 0.002%.
+surface average. This drift can be reduced 17-fold by increasing the outer correctors
+used by the solver from 1 to 3, but this adds computational cost, and only changes 
+the corrected surface average by 0.002% (showing that our approach of subtracting the
+volume average is effective).
 
 The uncorrected values can be recovered from the volume average:
 ``global s surface average steady`` + ``global s volume average final``.
@@ -363,10 +365,9 @@ Other results
   - ``particle volume`` (m\ :sup:`3`),
   - ``centre x position``: the position of the particle's centre along axis 0 (m),
   - ``s surf int transient``: the raw surface integral of the solver field over
-    the particle's reacting surface, weighted by the surface porosities, at each
-    time. It includes the ``T offset`` (see `The Solver`_), and areas are in the
-    units of the mesh (m\ :sup:`2` for a dimensional case, :math:`L^{2}` for a
-    dimensionless one). To get the particle's surface average, divide by its
+    the particle's reacting surface. It includes the ``T offset`` (see `The Solver`_), 
+    and areas are in the units of the mesh (m\ :sup:`2` for a dimensional case, :math:`L^{2}`
+    for a dimensionless one). To get the particle's surface average, divide by its
     surface area in the same units and subtract the ``T offset``.
 
 The settings of the case are saved too: ``dimensionless``, ``L`` (m, or
@@ -383,7 +384,7 @@ with its steady value, the window used for the steady-state check and the
 times at which the solver was continued.
 
 To look at the microscale fields, you can open the ``case.foam`` file within the OpenFOAM case using ParaView.
-The closure variable field is called ``T``, since OpenFOAM is normally solving for temperature.
+The closure variable field is called ``T``, since OpenFOAM is normally solving for temperature. Remember to subtract the ``T offset``.
 
 Reprocessing results
 ~~~~~~~~~~~~~~~~~~~~
@@ -397,27 +398,7 @@ OpenFOAM solver yourself, process the results again with:
 
 The settings of the case (``dimensionless``, ``L`` and the CBD and separator
 surface porosities) are read from ``closure_data.pickle``, so they always
-match the solved case. Cases set up with solveclosure 0.1.0 do not save these
-settings. To reprocess one of them, add the values that were used for the
-solve first:
-
-.. code-block:: python
-
-   import pickle
-
-   path = "case_dir/closure_data.pickle"
-   with open(path, "rb") as f:
-       closure_data = pickle.load(f)
-
-   closure_data.update({
-       "dimensionless": True,          # as used for the solve
-       "L": 1e-5,                      # lengthscale in m (None for a dimensional case)
-       "cbd surface porosity": 0.5,
-       "sep surface porosity": 1.0,
-   })
-
-   with open(path, "wb") as f:
-       pickle.dump(closure_data, f)
+match the solved case. 
 
 Running on a High-Performance Computer (HPC)
 --------------------------------------------
