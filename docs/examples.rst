@@ -44,6 +44,21 @@ The steady corrected surface average, ``global s surface average steady``, is
    The corrected surface average of the closure variable against time, for the
    two squares example.
 
+Whilst the main output of interest is the surface average of the closure
+variable, since this is used to define the dual-continuum model, the solution
+of the closure problem gives the closure variable as a microscale field. This
+has enormous potential for future research, since it provides a link between
+macroscale models and microscale results; see `Paten et al.
+<https://iopscience.iop.org/article/10.1149/1945-7111/ae959c/meta>`_ for a
+further discussion. The steady corrected closure variable (the closure
+variable minus its volume average) in a slice through this example:
+
+.. figure:: ../examples/two_squares/two_squares_field.png
+   :width: 80%
+
+   The steady corrected closure variable in the slice z = 5 of the two squares
+   example. The black lines outline the particles.
+
 Two squares with a separator
 ----------------------------
 
@@ -57,6 +72,14 @@ electrolyte on that face.
    :language: python
 
 The steady corrected surface average is -171.4 mol s C\ :sup:`-1` m\ :sup:`-1`.
+The steady corrected closure variable in a slice through this example:
+
+.. figure:: ../examples/two_squares/two_squares_separator_field.png
+   :width: 80%
+
+   The steady corrected closure variable in the slice z = 5 of the two squares
+   example with a separator, which is the dark grey strip at x = 0. The black
+   lines outline the particles.
 
 Three particles
 ---------------
@@ -92,3 +115,12 @@ The steady corrected surface average is -0.1046:
 
    The corrected surface average of the closure variable against time, for the
    three particles example.
+
+The steady corrected closure variable in a slice through all three particles:
+
+.. figure:: ../examples/three_particles/three_particles_field.png
+   :width: 80%
+
+   The steady corrected closure variable in the slice x = 24 of the three
+   particles example. The black lines outline the particles of the generated
+   label map.
