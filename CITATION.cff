@@ -4,8 +4,8 @@ title: solveclosure
 authors:
   - family-names: Paten
     given-names: Isaac
-version: 0.1.0
+version: 0.2.0
 doi: 10.5281/zenodo.17558923
-date-released: 2025-11-10
+date-released: 2026-11-14
 license: MIT
 repository-code: https://github.com/isaacbasil/solveclosure

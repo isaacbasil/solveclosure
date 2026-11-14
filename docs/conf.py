@@ -13,7 +13,7 @@ sys.path.insert(0, os.path.abspath("../src"))
 
 # -- Project information -----------------------------------------------------
 project = "solveclosure"
-copyright = "2025, Isaac Paten"
+copyright = "2025-2026, Isaac Paten"
 author = "Isaac Paten"
 
 # Take the version from the installed package (pyproject.toml), so it never

@@ -1,8 +1,8 @@
 # solveclosure
 
-[![Documentation Status](https://readthedocs.org/projects/solveclosure/badge/?version=latest)](https://solveclosure.readthedocs.io/en/latest/)
+[![Documentation Status](https://readthedocs.org/projects/solveclosure/badge/?version=stable)](https://solveclosure.readthedocs.io/en/stable/)
 
-📖 **Documentation:** https://solveclosure.readthedocs.io
+📖 **Documentation:** https://solveclosure.readthedocs.io/en/stable/
 
 Solves the closure problem for the dual-continuum model published by Paten et. al. See the following two articles for more information: 
 
@@ -68,4 +68,4 @@ solveclosure.solve_closure(
 )
 ```
 
-Example scripts are in the [examples](https://github.com/isaacbasil/solveclosure/tree/main/examples) folder, and are described, with their expected results, on the [Examples](https://solveclosure.readthedocs.io/en/latest/examples.html) page of the documentation.
+Example scripts are in the [examples](https://github.com/isaacbasil/solveclosure/tree/main/examples) folder, and are described, with their expected results, on the [Examples](https://solveclosure.readthedocs.io/en/stable/examples.html) page of the documentation.

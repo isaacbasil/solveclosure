@@ -25,6 +25,12 @@ thickness of an image of 100 × 100 × 10 voxels of 0.1 µm. The label map is
 provided. This example solves the dimensional problem, with
 :math:`D_{k}` = 4×10\ :sup:`-14` m\ :sup:`2` s\ :sup:`-1`.
 
+.. figure:: images/examples/two_squares_geometry.png
+   :width: 50%
+
+   A slice through the two squares example. The image is the same through its
+   whole thickness, so this is effectively a 2D case.
+
 .. literalinclude:: ../examples/two_squares/solve_closure_example.py
    :language: python
 
@@ -59,6 +65,12 @@ Three overlapping, irregular active material particles of different sizes
 (equivalent diameters of about 20 to 31 voxels) in electrolyte, in an image of
 50 × 50 × 50 voxels of 0.1 µm. No label map is provided: the example makes one
 with ``generate_label_map``, then solves the dimensionless problem.
+
+.. figure:: images/examples/three_particles_geometry.png
+   :width: 100%
+
+   The active material of the three particles example, seen from three
+   directions.
 
 .. literalinclude:: ../examples/three_particles/three_particles_example.py
    :language: python

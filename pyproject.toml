@@ -1,17 +1,18 @@
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=77.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "solveclosure"
-version = "0.1.0"
+version = "0.2.0"
 description = "A package that solves the closure problem for the dual-continuum model published by Paten et al."
 authors = [
   { name="Isaac Paten", email="isaacbpaten@gmail.com" }
 ]
-license = {text = "MIT"}
+license = "MIT"
+license-files = ["LICENSE"]
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 
 dependencies = [
     "tifffile",
@@ -34,6 +35,7 @@ docs = [
 [project.urls]
 Homepage = "https://github.com/isaacbasil/solveclosure"
 Documentation = "https://solveclosure.readthedocs.io"
+Changelog = "https://github.com/isaacbasil/solveclosure/blob/main/CHANGELOG.md"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

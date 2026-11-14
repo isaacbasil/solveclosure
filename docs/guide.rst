@@ -26,7 +26,7 @@ The user must have:
 Installation
 ------------
 
-solveclosure needs Python 3.8 or later. Install it from PyPI, preferably in a
+solveclosure needs Python 3.10 or later. Install it from PyPI, preferably in a
 virtual environment:
 
 .. code-block:: bash
