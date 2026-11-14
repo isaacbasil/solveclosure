@@ -48,7 +48,7 @@ Whilst the main output of interest is the surface average of the closure
 variable, since this is used to define the dual-continuum model, the solution
 of the closure problem gives the closure variable as a microscale field. This
 has enormous potential for future research, since it provides a link between
-macroscale models and microscale results; see `Paten et al.
+macroscale models and microscale results; see `this article
 <https://iopscience.iop.org/article/10.1149/1945-7111/ae959c/meta>`_ for a
 further discussion. The steady corrected closure variable (the closure
 variable minus its volume average) in a slice through this example:
